@@ -758,8 +758,8 @@ function tp_manage_options() {
 		if ($options['upgraded'] == '0') { 
 			$options['upgraded'] = '1';
 			update_option('tp_options', $options);
-			tp_upgrade();
 		}
+		tp_upgrade();
 	}
 	?>
 	<style type="text/css">
