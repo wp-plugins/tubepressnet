@@ -434,16 +434,25 @@ function tp_get_list($options,$action='tag') {
 	echo '<div class="wrap">';
 	_e('<h2>'.TP_IMPORT_LIST_MSG.'</h2>');
 	echo '<div align="center">';
-	if(isset($xml->video_details)) {
+	if(isset($xml->video_details) && !tp_duplicate($xml->video_details->id)) {
 		echo "<img src='{$xml->video_details->thumbnail_url}' alt='{$xml->video_details->title}' width='130' height='97' />";
 		tp_write_post($xml->video_details,$options);
 	} else {
 		foreach ($xml->video_list->video as $video) {
-			echo "<img src='{$video->thumbnail_url}' alt='{$video->title}' width='130' height='97' />  ";
-			tp_write_post($video,$options);
+			if(!tp_duplicate($video->id)) {
+				echo "<img src='{$video->thumbnail_url}' alt='{$video->title}' width='130' height='97' />  ";
+				tp_write_post($video,$options);
+			}
 		}
 	}
 	echo '</div></div>';
+}
+
+function tp_duplicate($id) {
+	global $wpdb;
+	$options = get_option('tp_options');
+	$post = $wpdb->get_results("SELECT ID FROM $wpdb->posts WHERE post_content like '%".$id."%' OR post_excerpt like '%".$id."%' LIMIT 1",ARRAY_A);
+	return (is_array($post) && $options['duplicate']) ? true : false;
 }
 
 function tp_player($id) {
@@ -727,7 +736,7 @@ function tp_import_tag() {
 <?php
 }
 function tp_manage_options() {
-	$default = array('width'=>'425','height'=>'344','autoplay'=>'1','rel'=>'1','color'=>'1','border'=>'0', 'type'=>'post',
+	$default = array('width'=>'425','height'=>'344','autoplay'=>'1','rel'=>'1','color'=>'1','border'=>'0', 'duplicate'=>'1', 'type'=>'post',
 			'excerpt'=>'<img style="border: 3px solid #000000" src="%tp_thumbnail%" /><br />%tp_title% was uploaded by: %tp_author%<br />Duration: %tp_duration%<br />Rating: %tp_rating_img%',
 			'content'=>'%tp_player%<p>%tp_description%</p>',
 			'upgraded'=>'0');
@@ -736,6 +745,7 @@ function tp_manage_options() {
 		$options['height'] = $_POST['height'];
 		$options['autoplay'] = (bool) $_POST['autoplay'];
 		$options['type'] = $_POST['type'];
+		$options['duplicate'] = (bool) $_POST['duplicate'];
 		$options['rel'] = (bool) $_POST['rel'];
 		$options['color'] = $_POST['color'];
 		if ($_POST['color'] == 1) { $options['color1']  = "0xd6d6d6"; $options['color2']  = "0xf0f0f0"; }
@@ -840,6 +850,11 @@ function tp_manage_options() {
 			</tr>
 			<tr>
 				<td colspan="4"><?php _e(TP_CUSTOM_MSG); ?></td>
+			</tr>
+			<tr><td>&nbsp;</td></tr>
+			<tr>
+				<td><?php _e(TP_DUPLICATE_MSG); ?></td>
+				<td colspan="2"><input name="duplicate" type="checkbox" id="duplicate" value="$options['duplicate']" <?php if($options['duplicate']) echo 'checked="checked"'; ?> /></td>
 			</tr>
 			<tr>
 				<td><?php _e(TP_TYPE_MSG); ?></td>

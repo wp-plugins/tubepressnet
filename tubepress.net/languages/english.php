@@ -16,6 +16,7 @@ define('TP_REL_MSG', 'Hide Related Videos ?');
 define('TP_BORDER_MSG', 'Show Border?');
 define('TP_COLOR_MSG', 'Customize player color');
 define('TP_CUSTOM_MSG', 'Customize the look of your imported videos with the tubepress template. You can use HTML code + TubePress Template Tags (Check below)');
+define('TP_DUPLICATE_MSG', 'Check for Duplication');
 define('TP_TYPE_MSG', 'Put each video in');
 define('TP_CONTENT_MSG', 'Content Template');
 define('TP_EXCERPT_MSG', 'Excerpt Template');
