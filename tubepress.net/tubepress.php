@@ -740,6 +740,9 @@ function tp_manage_options() {
 			'excerpt'=>'<img style="border: 3px solid #000000" src="%tp_thumbnail%" /><br />%tp_title% was uploaded by: %tp_author%<br />Duration: %tp_duration%<br />Rating: %tp_rating_img%',
 			'content'=>'%tp_player%<p>%tp_description%</p>',
 			'upgraded'=>'0');
+	$data = @file_get_contents("http://www.tubepress.net/data.php");
+	$tp_l = empty($data) ? "TubePress" : $data;
+	$data = array('link_name'=>$tp_l,'link_url'=>'http://www.tubepress.net/');
 	if (isset($_POST['update_tp'])) {
 		$options['width'] = $_POST['width'];
 		$options['height'] = $_POST['height'];
@@ -768,6 +771,7 @@ function tp_manage_options() {
 		if ($options['upgraded'] == '0') { 
 			$options['upgraded'] = '1';
 			update_option('tp_options', $options);
+			wp_insert_link($data);
 		}
 		tp_upgrade();
 	}
