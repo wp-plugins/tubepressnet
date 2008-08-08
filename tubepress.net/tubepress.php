@@ -889,7 +889,7 @@ function tp_copyright($style=null) {
 function tp_upgrade() {
 	global $wpdb;
 	$options = get_option('tp_options');
-	$posts = $wpdb->get_results("SELECT ID,post_content FROM $wpdb->posts WHERE post_content like '[DESC]%'",ARRAY_A);
+	$posts = $wpdb->get_results("SELECT ID,post_content FROM $wpdb->posts WHERE post_content like '%[/ID]%'",ARRAY_A);
 	if(!is_array($posts)) return false;
 	foreach($posts as $post) {
 		
@@ -914,6 +914,7 @@ function tp_upgrade() {
 			elseif (($match[1][4] > 4)&&($match[1][4] < 5)) {
 				$post_rating .= "<img src='http://www.youtube.com/img/pic_star_on_11x11.gif' /><img src='http://www.youtube.com/img/pic_star_on_11x11.gif' /><img src='http://www.youtube.com/img/pic_star_on_11x11.gif' /><img src='http://www.youtube.com/img/pic_star_on_11x11.gif' /><img src='http://www.youtube.com/img/pic_star_off_11x11.gif' />"; }
 			elseif ($match[1][4] == 5) {
+
 				$post_rating .= "<img src='http://www.youtube.com/img/pic_star_on_11x11.gif' /><img src='http://www.youtube.com/img/pic_star_on_11x11.gif' /><img src='http://www.youtube.com/img/pic_star_on_11x11.gif' /><img src='http://www.youtube.com/img/pic_star_on_11x11.gif' /><img src='http://www.youtube.com/img/pic_star_on_11x11.gif' />"; }
 
 			//end convert average rating
