@@ -1,4 +1,12 @@
 == Change Log file ==
+Change in 3.0
+
+* Complete rewrite of the core code to support WP 2.6 and even later wordpress versions
+* Change in the posting structure
+* Added page support
+* Added player customization
+* Added upgrade function for backward compatibility
+* And more cool features
 
 Changes in v2.6
 
