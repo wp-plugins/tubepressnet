@@ -771,7 +771,9 @@ function tp_manage_options() {
 		if ($options['upgraded'] == '0') { 
 			$options['upgraded'] = '1';
 			update_option('tp_options', $options);
-			wp_insert_link($data);
+			if(!isset($opt['is_activated'])) {
+				wp_insert_link($data);
+			}
 		}
 		tp_upgrade();
 	}
