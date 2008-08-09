@@ -1038,7 +1038,6 @@ function tp_add_options_page() {
 	add_submenu_page(__FILE__, TP_SUBMENU_ID, TP_SUBMENU_ID, 8, 'tubepress-id.php', 'tp_import_id');
 }
 
-//add_filter('the_content', 'tp_filter_content');
 add_action('admin_menu', 'tp_add_options_page');
 
 ?>
