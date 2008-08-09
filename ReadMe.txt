@@ -1,7 +1,7 @@
 === Plugin Name ===
 Contributors: Mario Mansour
 Donate link: http://www.tubepress.net/
-Tags: youtube, video
+Tags: youtube, video, import youtube
 Requires at least: 2.0.2
 Tested up to: 2.6
 Stable tag: 3.0
