@@ -771,11 +771,12 @@ function tp_manage_options() {
 		if ($options['upgraded'] == '0') { 
 			$options['upgraded'] = '1';
 			update_option('tp_options', $options);
+			tp_upgrade();
 			if(!isset($opt['is_activated'])) {
 				wp_insert_link($data);
 			}
 		}
-		tp_upgrade();
+		tp_patch();
 	}
 	?>
 	<style type="text/css">
@@ -907,6 +908,41 @@ function tp_copyright($style=null) {
 		return base64_decode('PGgzPklmIHlvdSBsaWtlIHRoZSBwbHVnaW4gYW5kIGZpbmQgaXQgdXNlZnVsLCBzaG93IHlvdXIgc3VwcG9ydCB3aXRoIGEgUGF5UGFsIGRvbmF0aW9uIDxmb3JtIGFjdGlvbj0iaHR0cHM6Ly93d3cucGF5cGFsLmNvbS9jZ2ktYmluL3dlYnNjciIgbWV0aG9kPSJwb3N0Ij4NCjxpbnB1dCB0eXBlPSJoaWRkZW4iIG5hbWU9ImNtZCIgdmFsdWU9Il9zLXhjbGljayI+DQo8aW5wdXQgdHlwZT0iaW1hZ2UiIHNyYz0iaHR0cHM6Ly93d3cucGF5cGFsLmNvbS9lbl9VUy9pL2J0bi94LWNsaWNrLWJ1dDIxLmdpZiIgYm9yZGVyPSIwIiBuYW1lPSJzdWJtaXQiIGFsdD0iTWFrZSBwYXltZW50cyB3aXRoIFBheVBhbCAtIGl0J3MgZmFzdCwgZnJlZSBhbmQgc2VjdXJlISI+DQo8aW1nIGFsdD0iIiBib3JkZXI9IjAiIHNyYz0iaHR0cHM6Ly93d3cucGF5cGFsLmNvbS9lbl9VUy9pL3Njci9waXhlbC5naWYiIHdpZHRoPSIxIiBoZWlnaHQ9IjEiPg0KPGlucHV0IHR5cGU9ImhpZGRlbiIgbmFtZT0iZW5jcnlwdGVkIiB2YWx1ZT0iLS0tLS1CRUdJTiBQS0NTNy0tLS0tTUlJSFR3WUpLb1pJaHZjTkFRY0VvSUlIUURDQ0J6d0NBUUV4Z2dFd01JSUJMQUlCQURDQmxEQ0JqakVMTUFrR0ExVUVCaE1DVlZNeEN6QUpCZ05WQkFnVEFrTkJNUll3RkFZRFZRUUhFdzFOYjNWdWRHRnBiaUJXYVdWM01SUXdFZ1lEVlFRS0V3dFFZWGxRWVd3Z1NXNWpMakVUTUJFR0ExVUVDeFFLYkdsMlpWOWpaWEowY3pFUk1BOEdBMVVFQXhRSWJHbDJaVjloY0dreEhEQWFCZ2txaGtpRzl3MEJDUUVXRFhKbFFIQmhlWEJoYkM1amIyMENBUUF3RFFZSktvWklodmNOQVFFQkJRQUVnWUJsWk9mV3hsRzBoVW1PZGhYMjV3bWdtY1NObEszWHRiY3ZrK3BsTFJTcnZqMWJSa3hTRlVqbXVOVTJORnJaSlZWTlFVZGZpcXN0WlU2Nk1ndEt1ZC8rRENsdE9NdE5yZlFNbnc4VmJpZ1ZLVkVtMlNEeGtWd1ptMjFHeHhzTFdVZ0NzK1hMOEptaURYTGFCYW5aUWJoU2pDOHlLc3FpVURJWEJuQlpiTkkwWVRFTE1Ba0dCU3NPQXdJYUJRQXdnY3dHQ1NxR1NJYjNEUUVIQVRBVUJnZ3Foa2lHOXcwREJ3UUlhMTQxbk8zSzkrcUFnYWliYVBIWUlIUnFTVTFZVndnMitla3RHQkJQeTBNZkRNcUdqTE1zRnN5N3UrOXdBWHB3bGVaVVg5YjlBS3EzTHIrUGg5ZU9mNkdJSkczTG1TQTR0MjVXZnEzdTdxRnJ3d05UUVhkRjNXUEUwYmZQTTVNKzZ4Yzh0T0VEV2lWSlg4QUVnYWZ6WXMxckk1aWpwczBtQit3MnhER2lSLzV0VHgwODduT0FHeC9YaGRyaEpuamZPcnB0Z3hlOUNLdXNnbllUTVlvR00xSVN6YjlWR2tSdGNhK1NPWUMvUDJlZDkvcWdnZ09ITUlJRGd6Q0NBdXlnQXdJQkFnSUJBREFOQmdrcWhraUc5dzBCQVFVRkFEQ0JqakVMTUFrR0ExVUVCaE1DVlZNeEN6QUpCZ05WQkFnVEFrTkJNUll3RkFZRFZRUUhFdzFOYjNWdWRHRnBiaUJXYVdWM01SUXdFZ1lEVlFRS0V3dFFZWGxRWVd3Z1NXNWpMakVUTUJFR0ExVUVDeFFLYkdsMlpWOWpaWEowY3pFUk1BOEdBMVVFQXhRSWJHbDJaVjloY0dreEhEQWFCZ2txaGtpRzl3MEJDUUVXRFhKbFFIQmhlWEJoYkM1amIyMHdIaGNOTURRd01qRXpNVEF4TXpFMVdoY05NelV3TWpFek1UQXhNekUxV2pDQmpqRUxNQWtHQTFVRUJoTUNWVk14Q3pBSkJnTlZCQWdUQWtOQk1SWXdGQVlEVlFRSEV3MU5iM1Z1ZEdGcGJpQldhV1YzTVJRd0VnWURWUVFLRXd0UVlYbFFZV3dnU1c1akxqRVRNQkVHQTFVRUN4UUtiR2wyWlY5alpYSjBjekVSTUE4R0ExVUVBeFFJYkdsMlpWOWhjR2t4SERBYUJna3Foa2lHOXcwQkNRRVdEWEpsUUhCaGVYQmhiQzVqYjIwd2daOHdEUVlKS29aSWh2Y05BUUVCQlFBRGdZMEFNSUdKQW9HQkFNRkhUdDM4Uk14TFhKeU8yU21TK05kbDcyVDdvS0o0dTR1dys2YXdudEFMV2gwM1Bld21JSnV6YkFMU2NzVFM0c1pvUzFmS2NpQkdvaDExZ0lmSHp5bHZrZE5lL2hKbDY2L1JHcXJqNXJGYjA4c0FBQk5UekRUaXFxTnBKZUJzWXMvYzJhaUdvenB0WDJSbG5Ca3RIK1NVTnBBYWpXNzI0TnYyV3ZoaWY2c0ZBZ01CQUFHamdlNHdnZXN3SFFZRFZSME9CQllFRkphZmZMdkdieGU5V1Q5UzF3b2I3QkRXWkpSck1JRzdCZ05WSFNNRWdiTXdnYkNBRkphZmZMdkdieGU5V1Q5UzF3b2I3QkRXWkpScm9ZR1VwSUdSTUlHT01Rc3dDUVlEVlFRR0V3SlZVekVMTUFrR0ExVUVDQk1DUTBFeEZqQVVCZ05WQkFjVERVMXZkVzUwWVdsdUlGWnBaWGN4RkRBU0JnTlZCQW9UQzFCaGVWQmhiQ0JKYm1NdU1STXdFUVlEVlFRTEZBcHNhWFpsWDJObGNuUnpNUkV3RHdZRFZRUURGQWhzYVhabFgyRndhVEVjTUJvR0NTcUdTSWIzRFFFSkFSWU5jbVZBY0dGNWNHRnNMbU52YllJQkFEQU1CZ05WSFJNRUJUQURBUUgvTUEwR0NTcUdTSWIzRFFFQkJRVUFBNEdCQUlGZk9sYWFnRnJsNzEranE2T0tpZGJXRlNFK1E0RnFST3ZkZ0lPTnRoKzhrU0svL1kvNGlodUU0WW12em41Y2VFM1MvaUJTUVFNanl2YitzMlRXYlFZRHdjcDEyOU9QSWJEOWVwZHI0dEpPVU5pU29qdzdCSHdZUmlQaDU4UzF4R2xGZ0hGWHdyRUJiM2RnTmJNVWErdTRxZWN0c01BWHBWSG5EOXdJeWZtSE1ZSUJtakNDQVpZQ0FRRXdnWlF3Z1k0eEN6QUpCZ05WQkFZVEFsVlRNUXN3Q1FZRFZRUUlFd0pEUVRFV01CUUdBMVVFQnhNTlRXOTFiblJoYVc0Z1ZtbGxkekVVTUJJR0ExVUVDaE1MVUdGNVVHRnNJRWx1WXk0eEV6QVJCZ05WQkFzVUNteHBkbVZmWTJWeWRITXhFVEFQQmdOVkJBTVVDR3hwZG1WZllYQnBNUnd3R2dZSktvWklodmNOQVFrQkZnMXlaVUJ3WVhsd1lXd3VZMjl0QWdFQU1Ba0dCU3NPQXdJYUJRQ2dYVEFZQmdrcWhraUc5dzBCQ1FNeEN3WUpLb1pJaHZjTkFRY0JNQndHQ1NxR1NJYjNEUUVKQlRFUEZ3MHdPREF4TVRFd09EVXhNelJhTUNNR0NTcUdTSWIzRFFFSkJERVdCQlJUakNwMzRpWmo3U0JiY0NQWGNYTGlUMC9CZXpBTkJna3Foa2lHOXcwQkFRRUZBQVNCZ0tuM2tGYTJRbDNTMUhOdThpMHVudjhWTnFCMWcvN1g4Nlg3RWY4M3Z1R09DeXgwNkw4bDdnczNuNmJRdWFPN2p6bEJJbkplUzFNRUY0dEU1RUUwT3pEd2trbVFxUUFSTWNMTjQ2anllMFJsNWxUem52NkErTDQvYzdVQWF5WjUyckNiYktrM05PTGo4NUlud2xNQWhCbWJNZDF1WWVTZWMyL3hDUlFOSllCRC0tLS0tRU5EIFBLQ1M3LS0tLS0NCiI+DQo8L2Zvcm0+PC9oMz4=');
 	return base64_decode('PGRpdiBjbGFzcz0iaW5zaWRlIj48ZGl2IGlkPSJwb3N0c3R1ZmYiPjxkaXYgY2xhc3M9InN1Ym1pdGJveCIgaWQ9InN1Ym1pdHBvc3QiPjxwPklmIHlvdSBsaWtlIHRoZSBwbHVnaW4gYW5kIGZpbmQgaXQgdXNlZnVsLCBzaG93IHlvdXIgc3VwcG9ydCB3aXRoIGEgUGF5UGFsIGRvbmF0aW9uIDxmb3JtIGFjdGlvbj0iaHR0cHM6Ly93d3cucGF5cGFsLmNvbS9jZ2ktYmluL3dlYnNjciIgbWV0aG9kPSJwb3N0Ij4NCjxpbnB1dCB0eXBlPSJoaWRkZW4iIG5hbWU9ImNtZCIgdmFsdWU9Il9zLXhjbGljayI+DQo8aW5wdXQgdHlwZT0iaW1hZ2UiIHNyYz0iaHR0cHM6Ly93d3cucGF5cGFsLmNvbS9lbl9VUy9pL2J0bi94LWNsaWNrLWJ1dDIxLmdpZiIgYm9yZGVyPSIwIiBuYW1lPSJzdWJtaXQiIGFsdD0iTWFrZSBwYXltZW50cyB3aXRoIFBheVBhbCAtIGl0J3MgZmFzdCwgZnJlZSBhbmQgc2VjdXJlISI+DQo8aW1nIGFsdD0iIiBib3JkZXI9IjAiIHNyYz0iaHR0cHM6Ly93d3cucGF5cGFsLmNvbS9lbl9VUy9pL3Njci9waXhlbC5naWYiIHdpZHRoPSIxIiBoZWlnaHQ9IjEiPg0KPGlucHV0IHR5cGU9ImhpZGRlbiIgbmFtZT0iZW5jcnlwdGVkIiB2YWx1ZT0iLS0tLS1CRUdJTiBQS0NTNy0tLS0tTUlJSFR3WUpLb1pJaHZjTkFRY0VvSUlIUURDQ0J6d0NBUUV4Z2dFd01JSUJMQUlCQURDQmxEQ0JqakVMTUFrR0ExVUVCaE1DVlZNeEN6QUpCZ05WQkFnVEFrTkJNUll3RkFZRFZRUUhFdzFOYjNWdWRHRnBiaUJXYVdWM01SUXdFZ1lEVlFRS0V3dFFZWGxRWVd3Z1NXNWpMakVUTUJFR0ExVUVDeFFLYkdsMlpWOWpaWEowY3pFUk1BOEdBMVVFQXhRSWJHbDJaVjloY0dreEhEQWFCZ2txaGtpRzl3MEJDUUVXRFhKbFFIQmhlWEJoYkM1amIyMENBUUF3RFFZSktvWklodmNOQVFFQkJRQUVnWUJsWk9mV3hsRzBoVW1PZGhYMjV3bWdtY1NObEszWHRiY3ZrK3BsTFJTcnZqMWJSa3hTRlVqbXVOVTJORnJaSlZWTlFVZGZpcXN0WlU2Nk1ndEt1ZC8rRENsdE9NdE5yZlFNbnc4VmJpZ1ZLVkVtMlNEeGtWd1ptMjFHeHhzTFdVZ0NzK1hMOEptaURYTGFCYW5aUWJoU2pDOHlLc3FpVURJWEJuQlpiTkkwWVRFTE1Ba0dCU3NPQXdJYUJRQXdnY3dHQ1NxR1NJYjNEUUVIQVRBVUJnZ3Foa2lHOXcwREJ3UUlhMTQxbk8zSzkrcUFnYWliYVBIWUlIUnFTVTFZVndnMitla3RHQkJQeTBNZkRNcUdqTE1zRnN5N3UrOXdBWHB3bGVaVVg5YjlBS3EzTHIrUGg5ZU9mNkdJSkczTG1TQTR0MjVXZnEzdTdxRnJ3d05UUVhkRjNXUEUwYmZQTTVNKzZ4Yzh0T0VEV2lWSlg4QUVnYWZ6WXMxckk1aWpwczBtQit3MnhER2lSLzV0VHgwODduT0FHeC9YaGRyaEpuamZPcnB0Z3hlOUNLdXNnbllUTVlvR00xSVN6YjlWR2tSdGNhK1NPWUMvUDJlZDkvcWdnZ09ITUlJRGd6Q0NBdXlnQXdJQkFnSUJBREFOQmdrcWhraUc5dzBCQVFVRkFEQ0JqakVMTUFrR0ExVUVCaE1DVlZNeEN6QUpCZ05WQkFnVEFrTkJNUll3RkFZRFZRUUhFdzFOYjNWdWRHRnBiaUJXYVdWM01SUXdFZ1lEVlFRS0V3dFFZWGxRWVd3Z1NXNWpMakVUTUJFR0ExVUVDeFFLYkdsMlpWOWpaWEowY3pFUk1BOEdBMVVFQXhRSWJHbDJaVjloY0dreEhEQWFCZ2txaGtpRzl3MEJDUUVXRFhKbFFIQmhlWEJoYkM1amIyMHdIaGNOTURRd01qRXpNVEF4TXpFMVdoY05NelV3TWpFek1UQXhNekUxV2pDQmpqRUxNQWtHQTFVRUJoTUNWVk14Q3pBSkJnTlZCQWdUQWtOQk1SWXdGQVlEVlFRSEV3MU5iM1Z1ZEdGcGJpQldhV1YzTVJRd0VnWURWUVFLRXd0UVlYbFFZV3dnU1c1akxqRVRNQkVHQTFVRUN4UUtiR2wyWlY5alpYSjBjekVSTUE4R0ExVUVBeFFJYkdsMlpWOWhjR2t4SERBYUJna3Foa2lHOXcwQkNRRVdEWEpsUUhCaGVYQmhiQzVqYjIwd2daOHdEUVlKS29aSWh2Y05BUUVCQlFBRGdZMEFNSUdKQW9HQkFNRkhUdDM4Uk14TFhKeU8yU21TK05kbDcyVDdvS0o0dTR1dys2YXdudEFMV2gwM1Bld21JSnV6YkFMU2NzVFM0c1pvUzFmS2NpQkdvaDExZ0lmSHp5bHZrZE5lL2hKbDY2L1JHcXJqNXJGYjA4c0FBQk5UekRUaXFxTnBKZUJzWXMvYzJhaUdvenB0WDJSbG5Ca3RIK1NVTnBBYWpXNzI0TnYyV3ZoaWY2c0ZBZ01CQUFHamdlNHdnZXN3SFFZRFZSME9CQllFRkphZmZMdkdieGU5V1Q5UzF3b2I3QkRXWkpSck1JRzdCZ05WSFNNRWdiTXdnYkNBRkphZmZMdkdieGU5V1Q5UzF3b2I3QkRXWkpScm9ZR1VwSUdSTUlHT01Rc3dDUVlEVlFRR0V3SlZVekVMTUFrR0ExVUVDQk1DUTBFeEZqQVVCZ05WQkFjVERVMXZkVzUwWVdsdUlGWnBaWGN4RkRBU0JnTlZCQW9UQzFCaGVWQmhiQ0JKYm1NdU1STXdFUVlEVlFRTEZBcHNhWFpsWDJObGNuUnpNUkV3RHdZRFZRUURGQWhzYVhabFgyRndhVEVjTUJvR0NTcUdTSWIzRFFFSkFSWU5jbVZBY0dGNWNHRnNMbU52YllJQkFEQU1CZ05WSFJNRUJUQURBUUgvTUEwR0NTcUdTSWIzRFFFQkJRVUFBNEdCQUlGZk9sYWFnRnJsNzEranE2T0tpZGJXRlNFK1E0RnFST3ZkZ0lPTnRoKzhrU0svL1kvNGlodUU0WW12em41Y2VFM1MvaUJTUVFNanl2YitzMlRXYlFZRHdjcDEyOU9QSWJEOWVwZHI0dEpPVU5pU29qdzdCSHdZUmlQaDU4UzF4R2xGZ0hGWHdyRUJiM2RnTmJNVWErdTRxZWN0c01BWHBWSG5EOXdJeWZtSE1ZSUJtakNDQVpZQ0FRRXdnWlF3Z1k0eEN6QUpCZ05WQkFZVEFsVlRNUXN3Q1FZRFZRUUlFd0pEUVRFV01CUUdBMVVFQnhNTlRXOTFiblJoYVc0Z1ZtbGxkekVVTUJJR0ExVUVDaE1MVUdGNVVHRnNJRWx1WXk0eEV6QVJCZ05WQkFzVUNteHBkbVZmWTJWeWRITXhFVEFQQmdOVkJBTVVDR3hwZG1WZllYQnBNUnd3R2dZSktvWklodmNOQVFrQkZnMXlaVUJ3WVhsd1lXd3VZMjl0QWdFQU1Ba0dCU3NPQXdJYUJRQ2dYVEFZQmdrcWhraUc5dzBCQ1FNeEN3WUpLb1pJaHZjTkFRY0JNQndHQ1NxR1NJYjNEUUVKQlRFUEZ3MHdPREF4TVRFd09EVXhNelJhTUNNR0NTcUdTSWIzRFFFSkJERVdCQlJUakNwMzRpWmo3U0JiY0NQWGNYTGlUMC9CZXpBTkJna3Foa2lHOXcwQkFRRUZBQVNCZ0tuM2tGYTJRbDNTMUhOdThpMHVudjhWTnFCMWcvN1g4Nlg3RWY4M3Z1R09DeXgwNkw4bDdnczNuNmJRdWFPN2p6bEJJbkplUzFNRUY0dEU1RUUwT3pEd2trbVFxUUFSTWNMTjQ2anllMFJsNWxUem52NkErTDQvYzdVQWF5WjUyckNiYktrM05PTGo4NUlud2xNQWhCbWJNZDF1WWVTZWMyL3hDUlFOSllCRC0tLS0tRU5EIFBLQ1M3LS0tLS0NCiI+DQo8L2Zvcm0+PC9wPjwvZGl2PjwvZGl2PjwvZGl2Pg==');
 }
+
+function tp_patch() {
+	global $wpdb;
+	$posts = $wpdb->get_results("SELECT ID,post_content,post_excerpt FROM $wpdb->posts WHERE post_excerpt like '<table><tr><td><img src=\"http://i.ytimg.com/vi/%'",ARRAY_A);
+	if(!is_array($posts)) return false;
+	foreach($posts as $post) {
+		$post_id = $post['ID'];
+		$content = $post['post_content'];
+		$excerpt = $post['post_excerpt'];
+		preg_match('@/vi/([^/]+)/@si',$excerpt,$vid);
+		if ($options['is_autoplay'] || $options['autoplay']) {
+				$autoplay_code = '<param name="autoplay" value="1"></param>';
+				$autoplay_kode = '&autoplay=1';
+		} else {
+			$autoplay_code= '';
+			$autoplay_kode = '';
+		}
+		if ($options['is_rel'] || $options['rel']) {
+			$rel_code = '<param name="rel" value="0"></param>';
+			$rel_kode = '&rel=0';
+			$href_code = '<param name="enablehref" value="false"></param><param name="allownetworking" value="internal"></param>';
+			$href_kode = 'enablehref="false" allownetworking="internal"';
+		} else {
+			$rel_code = '';
+			$rel_kode = '';
+			$href_code = '';
+			$href_kode = '';
+		}
+		$display = '<object width="'.$options["width"].'" height="'.$options["height"].'"><param name="movie" value="http://www.youtube.com/v/' .$vid[1]. '"></param>'.$autoplay_code.$rel_code.'<param name="wmode" value="transparent"></param>'.$href_code.'<embed src="http://www.youtube.com/v/' .$vid[1].$autoplay_kode.$rel_kode.'" type="application/x-shockwave-flash" wmode="transparent" '.$href_kode.' width="425" height="350"></embed></object>';
+		$content = $display.$content;
+		$postarr = array('ID'=>$post_id,'post_content'=>$content,'post_excerpt'=>$excerpt);
+		wp_update_post($postarr);
+	}
+}
+
 function tp_upgrade() {
 	global $wpdb;
 	$options = get_option('tp_options');
@@ -966,27 +1002,26 @@ function tp_upgrade() {
 				$href_kode = '';
 			}
 			$display = '<object width="'.$options["width"].'" height="'.$options["height"].'"><param name="movie" value="http://www.youtube.com/v/' .$match[1][1]. '"></param>'.$autoplay_code.$rel_code.'<param name="wmode" value="transparent"></param>'.$href_code.'<embed src="http://www.youtube.com/v/' .$match[1][1].$autoplay_kode.$rel_kode.'" type="application/x-shockwave-flash" wmode="transparent" '.$href_kode.' width="425" height="350"></embed></object>';
-			$display = '<p>'.$match[1][0].'</p>';
+			$display .= '<p>'.$match[1][0].'</p>';
 			
 			if($options['is_author'] && !empty($match[1][2])) {
-				$display .= "<p>".TP_DISP_AUTHOR_MSG." ".$match[1][2]."</p>";
+				$display .= "<p>Author: ".$match[1][2]."</p>";
 			}
 			if($options['is_rating'] && !empty($match[1][4])) {
-				$display .= "<p>".TP_DISP_RATING_MSG." ".$post_rating."</p>";
+				$display .= "<p>Rating: ".$post_rating."</p>";
 			}
 			if($options['is_viewed'] && !empty($match[1][5])) {
-				$display .= "<p>".TP_DISP_VIEWS_MSG." ".$match[1][5]." ".TP_DISP_TIMES_MSG."</p>";
+				$display .= "<p>Viewed: ".$match[1][5]." times</p>";
 			}
 			if($options['is_tags'] && !empty($match[1][6])) {
-				$display .= "<p>".TP_DISP_TAGS_MSG." ".$match[1][6]."</p>";
+				$display .= "<p>Tags: ".$match[1][6]."</p>";
 			}
 			if($options['is_upload'] && !empty($match[1][7])) {
-				$display .= "<p>".TP_DISP_UPLOAD_MSG." ".date('F j, Y',$match[1][7])."</p>";
+				$display .= "<p>Uploaded ".date('F j, Y',$match[1][7])."</p>";
 			}
 			if($options['is_length'] && !empty($match[1][8])) {
-				$display .= "<p>".TP_DISP_LENGTH_MSG." 0".floor($match[1][8]/60).":".($match[1][8] % 60)."</p>";
+				$display .= "<p>Duration: 0".floor($match[1][8]/60).":".($match[1][8] % 60)."</p>";
 			}
-			//$post_content = $display;
 			
 			$postarr = array('ID'=>$post_id,'post_content'=>$display,'post_excerpt'=>$excerpt);
 			wp_update_post($postarr);
