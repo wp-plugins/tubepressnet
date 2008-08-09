@@ -776,7 +776,6 @@ function tp_manage_options() {
 				wp_insert_link($data);
 			}
 		}
-		tp_patch();
 	}
 	?>
 	<style type="text/css">
