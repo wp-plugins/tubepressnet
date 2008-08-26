@@ -7,6 +7,14 @@ Author: Mario Mansour
 Version: 3.0
 Author URI: http://www.mariomansour.com/
 */
+error_reporting(0);
+$allow_url_fopen = (bool) @ini_get('allow_url_fopen');
+$safe_mode = (bool) @ini_get('safe_mode');
+if($safe_mode && !$allow_url_fopen){
+	die('URL file-access is disabled in the server configuration.\nPlease contact your web hosting provider to enable allow_url_fopen.');
+} else if(!$safe_mode) {
+	@ini_set('allow_url_fopen', 'on');
+}
 include('languages/english.php');
 class SimpleXMLObject {
     function attributes(){
@@ -434,9 +442,11 @@ function tp_get_list($options,$action='tag') {
 	echo '<div class="wrap">';
 	_e('<h2>'.TP_IMPORT_LIST_MSG.'</h2>');
 	echo '<div align="center">';
-	if(isset($xml->video_details) && !tp_duplicate($xml->video_details->id)) {
-		echo "<img src='{$xml->video_details->thumbnail_url}' alt='{$xml->video_details->title}' width='130' height='97' />";
-		tp_write_post($xml->video_details,$options);
+	if($action == 'id' && isset($xml->video_details)) {
+		if(!tp_duplicate($options['video_id'])) {
+			echo "<img src='{$xml->video_details->thumbnail_url}' alt='{$xml->video_details->title}' width='130' height='97' />";
+			tp_write_post($xml->video_details,$options);
+		}
 	} else {
 		foreach ($xml->video_list->video as $video) {
 			if(!tp_duplicate($video->id)) {
