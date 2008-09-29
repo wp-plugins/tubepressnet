@@ -4,7 +4,7 @@ Plugin Name: TubePress.Net
 Plugin URI: http://www.tubepress.net/
 Description:  The Youtube Plugin for Wordpress
 Author: Mario Mansour
-Version: 3.0
+Version: 3.0.1
 Author URI: http://www.mariomansour.com/
 */
 include('languages/english.php');
