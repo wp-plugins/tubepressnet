@@ -7,14 +7,6 @@ Author: Mario Mansour
 Version: 3.0
 Author URI: http://www.mariomansour.com/
 */
-error_reporting(0);
-$allow_url_fopen = (bool) @ini_get('allow_url_fopen');
-$safe_mode = (bool) @ini_get('safe_mode');
-if($safe_mode && !$allow_url_fopen){
-	die('URL file-access is disabled in the server configuration.\nPlease contact your web hosting provider to enable allow_url_fopen.');
-} else if(!$safe_mode) {
-	@ini_set('allow_url_fopen', 'on');
-}
 include('languages/english.php');
 class SimpleXMLObject {
     function attributes(){
@@ -442,11 +434,9 @@ function tp_get_list($options,$action='tag') {
 	echo '<div class="wrap">';
 	_e('<h2>'.TP_IMPORT_LIST_MSG.'</h2>');
 	echo '<div align="center">';
-	if($action == 'id' && isset($xml->video_details)) {
-		if(!tp_duplicate($options['video_id'])) {
-			echo "<img src='{$xml->video_details->thumbnail_url}' alt='{$xml->video_details->title}' width='130' height='97' />";
-			tp_write_post($xml->video_details,$options);
-		}
+	if(isset($xml->video_details) && !tp_duplicate($xml->video_details->id)) {
+		echo "<img src='{$xml->video_details->thumbnail_url}' alt='{$xml->video_details->title}' width='130' height='97' />";
+		tp_write_post($xml->video_details,$options);
 	} else {
 		foreach ($xml->video_list->video as $video) {
 			if(!tp_duplicate($video->id)) {
@@ -500,9 +490,10 @@ function tp_write_post($v,$opt) {
 	$tpo = get_option('tp_options');
 	$post_template_excerpt = $tpo['excerpt'];
 	$post_template_content = $tpo['content'];
+	$vid = (!empty($v->id)) ? $v->id : $opt['video_id'];
 	
 	$tp_tags = array("%tp_player%","%tp_id%","%tp_title%","%tp_thumbnail%","%tp_description%","%tp_duration%","%tp_rating_num%","%tp_rating_img%","%tp_viewcount%","%tp_author%","%tp_tags%","%tp_url%");
-	$tag_values = array(tp_player($v->id),$v->id,$v->title,$v->thumbnail_url,$v->description,$v->length_seconds,$v->rating_avg,tp_rating_c($v->rating_avg),$v->view_count,$v->author,$v->tags,$v->url);
+	$tag_values = array(tp_player($vid),$vid,$v->title,$v->thumbnail_url,$v->description,$v->length_seconds,$v->rating_avg,tp_rating_c($v->rating_avg),$v->view_count,$v->author,$v->tags,$v->url);
 	
 	$post_template_excerpt = str_replace($tp_tags,$tag_values,$post_template_excerpt);
 	$post_template_content = str_replace($tp_tags,$tag_values,$post_template_content);
