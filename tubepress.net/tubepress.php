@@ -737,7 +737,7 @@ function tp_import_tag() {
 <?php
 }
 function tp_manage_options() {
-	$default = array('width'=>'425','height'=>'344','autoplay'=>'1','rel'=>'1','color'=>'1','border'=>'0', 'duplicate'=>'1', 'type'=>'post',
+	$default = array('width'=>'425','height'=>'344','autoplay'=>'0','rel'=>'1','color'=>'1','border'=>'0', 'duplicate'=>'1', 'type'=>'post',
 			'excerpt'=>'<img style="border: 3px solid #000000" src="%tp_thumbnail%" /><br />%tp_title% was uploaded by: %tp_author%<br />Duration: %tp_duration%<br />Rating: %tp_rating_img%',
 			'content'=>'%tp_player%<p>%tp_description%</p>',
 			'upgraded'=>'0');
