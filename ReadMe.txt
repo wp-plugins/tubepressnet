@@ -1,16 +1,15 @@
 === Plugin Name ===
 Contributors: Mario Mansour
 Donate link: http://www.tubepress.net/
-Tags: youtube, video, import youtube
+Tags: wordpress video plugin, youtube, video, import youtube videos, wordpress plugins, wordpress youtube, youtube wordpress
 Requires at least: 2.0.2
-Tested up to: 2.6
-Stable tag: 3.0
+Tested up to: 2.7.1
+Stable tag: 3.0.1
 
 
 == Description ==
-
-I know it took a while to release this upgrade but it is finally available.
-* Complete rewrite of the core code to support WP 2.6 and even later wordpress versions
+TubePress: WordPress Video Plugin for YouTube Download & Import Videos
+* Complete rewrite of the core code to support ALL WP versions
 * Change in the posting structure
 * Added page support
 * Added upgrade function for backward compatibility
@@ -32,4 +31,4 @@ I know it took a while to release this upgrade but it is finally available.
 == Final Words ==
 
 Check out the website for more examples and discussions
-[TubePress](http://www.tubepress.net/ "Wordpress Youtube Plugin")
+[TubePress](http://www.tubepress.net/ "Wordpress Video Plugin")
