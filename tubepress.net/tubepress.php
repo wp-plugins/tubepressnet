@@ -5,7 +5,7 @@ Plugin URI: http://www.tubepress.net/
 Description:  The Youtube Plugin for Wordpress
 Author: Mario Mansour
 Version: 3.0.1
-Author URI: http://www.mariomansour.com/
+Author URI: http://www.mariomansour.org/
 */
 include('languages/english.php');
 class SimpleXMLObject {
