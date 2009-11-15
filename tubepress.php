@@ -115,16 +115,15 @@ function tp_get_list($options,$action='tag') {
 	} else { $status = -1; }
 	switch($status) {
 		case -1:
-			echo '<div class="updated"><p>No Videos Found</p></div>';
+			echo '<div class="updated"><p>'.__('No Videos Found').'</p></div>';
 		break;	
 		case 0:
-			echo '<div class="updated"><p>Videos already imported</p></div>';
+			echo '<div class="updated"><p>'.__('Videos already imported').'</p></div>';
 		break;
 		case 1:
-			echo '<div class="updated"><p>Videos imported successfully</p></div>';
+			echo '<div class="updated"><p>'.__('Videos imported successfully').'</p></div>';
 		break;
 		default:
-			echo '<div class="updated"><p>Something went wrong, please try again or <a href="http://www.tubepress.net/" target="_blank">leave a comment here</a></p></div>';
 		break;
 	}
 	echo '</div></div>';
@@ -157,6 +156,9 @@ function tp_player($id) {
 	}
 	$pl .= $param.'"></param><param name="allowFullScreen" value="true"></param>'.$auto;
 	$pl .= '<embed src="http://www.youtube.com/v/'.$id.$param.'" type="application/x-shockwave-flash" allowfullscreen="true" width="'.$opt['width'].'" height="'.$opt['height'].'"></embed></object>';
+	if ($opt['color']==0) {
+		$pl = '[wp-jw-player src="http://www.youtube.com/watch?v='.$id.'"]';
+	}
 	return $pl;
 }
 
@@ -555,6 +557,10 @@ function tp_manage_options() {
 			preview += color+'.gif" alt="" />';
 			
 			previewImage.innerHTML = preview;
+			previewImage.style.display = 'block';
+		}
+		function tpToggle() {
+			document.getElementById('tp-preview').style.display = 'none';
 		}
 	</script>
 	<div class="wrap">
@@ -566,7 +572,7 @@ function tp_manage_options() {
 				<td><?php _e('Video Player Width'); ?></td>
 				<td><input name="width" type="text" id="width" value="<?php echo $options['width']; ?>" /></td>
 				<?php $type = ($options['border']) ? 'border' : 'color'; ?>
-				<td rowspan="6"><div id="tp-preview"><img src="<?php echo get_option('siteurl'); ?>/wp-content/plugins/tubepress.net/images/<?=$type.$options['color']?>.gif" alt="" /></div></td>
+				<td rowspan="6"><div id="tp-preview" <?php if($options['color']==0) echo 'style="display:none;"';?>><img src="<?php echo get_option('siteurl'); ?>/wp-content/plugins/tubepress.net/images/<?=$type.$options['color']?>.gif" alt="" /></div></td>
 			</tr>
 			<tr>
 				<td><?php _e('Video Player Height'); ?></td>
@@ -601,6 +607,11 @@ function tp_manage_options() {
 					</tr>
 				</table>
 				</td>
+			</tr>
+			<tr>
+				<td><?php _e('Use WP JW Player'); ?></td>
+				<td><input onclick="tpToggle();" name="color" id="color" type="radio" value="0" <?php if($options['color']==0) echo 'checked="checked"'; ?>>
+				<?php if(!class_exists('wpjp_JWPlayerAdmin')) _e('WP JW Player Plugin is required. <a href="http://downloads.wordpress.org/plugin/wp-jw-player.zip">Download it here</a>'); ?></td>
 			</tr>
 			<tr>
 				<td colspan="4">&nbsp;</td>
