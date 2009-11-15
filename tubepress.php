@@ -4,7 +4,7 @@ Plugin Name: TubePress.Net
 Plugin URI: http://www.tubepress.net/
 Description:  The Youtube Plugin for Wordpress
 Author: Mario Mansour
-Version: 3.1.0
+Version: 3.1.1
 Author URI: http://www.mariomansour.org/
 */
 class youtube {
@@ -95,22 +95,38 @@ function tp_get_list($options,$action='tag') {
 	echo '<div class="wrap">';
 	_e('<h2>Imported Video List</h2>');
 	echo '<div align="center">';
-	$import_success = false;
+	$status = 0;
 	if(isset($xml['feed']['entry'])) {
 		foreach ($xml['feed']['entry'] as $video) {
 			$video['id']['$t'] = extractID($video['id']['$t']);
 			if(!tp_duplicate($video['id']['$t'])) {
-				$import_success = true;
+				$status = 1;
 				echo "<img src='{$video['media$group']['media$thumbnail'][0]['url']}' alt='{$video['title']['$t']}' width='120' height='90' />  ";
 				tp_write_post($video,$options);
 			}
 		}
-		if($import_success) {
-			echo '<div class="updated"><p>Videos imported successfully</p></div>';
-		} else {
-			echo '<div class="updated"><p>Videos already imported</p></div>';
+	} else if(isset($xml['entry'])) {
+		$xml['entry']['id']['$t'] = extractID($xml['entry']['id']['$t']);
+		if(!tp_duplicate($xml['entry']['id']['$t'])) {
+			$status = 1;
+			echo "<img src='{$xml['entry']['media$group']['media$thumbnail'][0]['url']}' alt='{$xml['entry']['title']['$t']}' width='120' height='90' />  ";
+			tp_write_post($xml['entry'],$options);
 		}
-	} else { echo '<div class="updated"><p>No Videos Found</p></div>'; }
+	} else { $status = -1; }
+	switch($status) {
+		case -1:
+			echo '<div class="updated"><p>No Videos Found</p></div>';
+		break;	
+		case 0:
+			echo '<div class="updated"><p>Videos already imported</p></div>';
+		break;
+		case 1:
+			echo '<div class="updated"><p>Videos imported successfully</p></div>';
+		break;
+		default:
+			echo '<div class="updated"><p>Something went wrong, please try again or <a href="http://www.tubepress.net/" target="_blank">leave a comment here</a></p></div>';
+		break;
+	}
 	echo '</div></div>';
 }
 function extractID($id) {
@@ -221,7 +237,7 @@ function tp_comment_form($options) {
 }
 
 function tp_import_id() {
-	$default = array('video_id'=>'QGQMyN75LFQ');
+	$default = array('video_id'=>'ImtuJ-kzsAc');
 	if (isset($_POST['update_tp'])) {
 		$options['video_id'] = $_POST['video_id'];
 		$options['cat'] = $_POST['cat'];
@@ -242,7 +258,7 @@ function tp_import_id() {
 			<tr>
 				<td>Video ID:</td>
 				<td><input name="video_id" type="text" id="video_id" value="<?php echo $options['video_id'] ?>" /></td>
-				<td>http://youtube.com/watch?v=<strong>QGQMyN75LFQ</strong></td>
+				<td>http://www.youtube.com/watch?v=<strong>ImtuJ-kzsAc</strong></td>
 			</tr>
 			<?php _e(tp_category_form($options)); ?>
 			<?php _e(tp_comment_form($options)); ?>
