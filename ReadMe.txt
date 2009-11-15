@@ -4,7 +4,7 @@ Donate link: http://www.tubepress.net/
 Tags: wordpress video plugin, youtube, video, import youtube videos, wordpress plugins, wordpress youtube, youtube wordpress
 Requires at least: 2.7
 Tested up to: 2.8.6
-Stable tag: 3.1.0
+Stable tag: trunk
 
 Import Youtube Videos directly into your wordpress blog post or pages.
 
