@@ -4,7 +4,7 @@ Plugin Name: TubePress.Net
 Plugin URI: http://www.tubepress.net/
 Description:  The Youtube Plugin for Wordpress
 Author: Mario Mansour
-Version: 3.1.2
+Version: 3.1.3
 Author URI: http://www.mariomansour.org/
 */
 class youtube {
@@ -184,7 +184,7 @@ function tp_write_post($v,$opt) {
 	$post_template_excerpt = str_replace($tp_tags,$tag_values,$post_template_excerpt);
 	$post_template_content = str_replace($tp_tags,$tag_values,$post_template_content);
 	$post_category = explode(',', trim($opt['cat'], " \n\t\r\0\x0B,"));
-	$post_tags = explode(' ', trim($v->tags," \n\t\r\0\x0B,"));
+	$post_tags = explode(', ', trim($v['media$group']['media$keywords']['$t']," \n\t\r\0\x0B,"));
 	$tp_post = array('post_title' => $v['title']['$t'],
 			'post_content' => $post_template_content,
 			'post_status' => 'publish',
