@@ -10,7 +10,7 @@ Import Youtube Videos directly into your wordpress blog post or pages.
 
 == Description ==
 
-TubePress: WordPress Video Plugin for YouTube Download & Import Videos
+[TubePress](http://www.tubepress.net/ "Wordpress Video Plugin Youtube"): WordPress Video Plugin for YouTube Download & Import Videos
 
 * Complete rewrite of the core code to support ALL WP versions
 * Change in the posting structure
