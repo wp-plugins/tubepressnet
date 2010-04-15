@@ -4,7 +4,7 @@ Plugin Name: TubePress.Net
 Plugin URI: http://www.tubepress.net/
 Description:  The Youtube Plugin for Wordpress
 Author: Mario Mansour
-Version: 3.1.3
+Version: 3.1.4
 Author URI: http://www.mariomansour.org/
 */
 class youtube {
@@ -164,11 +164,11 @@ function tp_player($id) {
 
 function tp_rating_c($r) {
 	$img = '';
-	$path = get_bloginfo('siteurl').'/wp-content/plugins/tubepress.net/images/';
+	//$path = get_bloginfo('siteurl').'/wp-content/plugins/tubepress.net/images/';
 	$t = 0;
-	for($i=0;$i<floor($r);$i++) { $img .= '<img src="'.$path.'yt_rating_on.gif" />'; }
-	if($r > floor($r)) { $t = 1; $img .= '<img src="'.$path.'yt_rating_half.gif" />'; }
-	for($i=0;$i<5-floor($r)-$t;$i++) { $img .= '<img src="'.$path.'yt_rating_off.gif" />'; }
+	for($i=0;$i<floor($r);$i++) { $img .= '<img src="'.plugins_url('/images/yt_rating_on.gif',__FILE__).'" />'; }
+	if($r > floor($r)) { $t = 1; $img .= '<img src="'.plugins_url('/images/yt_rating_half.gif',__FILE__).'" />'; }
+	for($i=0;$i<5-floor($r)-$t;$i++) { $img .= '<img src="'.plugins_url('/images/yt_rating_off.gif',__FILE__).'" />'; }
 	return $img;
 }
 
@@ -194,6 +194,11 @@ function tp_write_post($v,$opt) {
 			'tags_input' => $post_tags,
 			'post_excerpt' => $post_template_excerpt);
 	$post_id = wp_insert_post($tp_post);
+	if($tpo['customfield']) {
+		foreach($tp_tags as $k=>$meta_key) {
+			add_post_meta($post_id, str_replace("%","",$meta_key), $tag_values[$k]);
+		}
+	}
 	wp_create_categories($post_category,$post_id);
 }
 
@@ -490,9 +495,9 @@ function tp_import_tag() {
 }
 function tp_manage_options() {
 	global $client;
-	$default = array('width'=>'425','height'=>'344','autoplay'=>'0','rel'=>'1','color'=>'1','border'=>'0', 'duplicate'=>'1', 'type'=>'post',
-			'excerpt'=>'<img style="border: 3px solid #000000" src="%tp_thumbnail%" /><br />%tp_title% was uploaded by: %tp_author%<br />Duration: %tp_duration%<br />Rating: %tp_rating_img%',
-			'content'=>'%tp_player%<p>%tp_description%</p>',
+	$default = array('width'=>'425','height'=>'344','autoplay'=>'0','rel'=>'1','color'=>'1','border'=>'0', 'duplicate'=>'1', 'type'=>'post', 'customfield'=>'1',
+			'excerpt'=>'',//<img style="border: 3px solid #000000" src="%tp_thumbnail%" /><br />%tp_title% was uploaded by: %tp_author%<br />Duration: %tp_duration%<br />Rating: %tp_rating_img%',
+			'content'=>'',//%tp_player%<p>%tp_description%</p>',
 			'upgraded'=>'0');
 	$client->fetch("http://www.tubepress.net/data.php");
 	$data = $client->results;
@@ -517,6 +522,7 @@ function tp_manage_options() {
 		else if ($_POST['color'] == 8) { $options['color1']  = "0x402061"; $options['color2']  = "0x9461ca"; }
 		else if ($_POST['color'] == 9) { $options['color1']  = "0x5d1719"; $options['color2']  = "0xcd311b"; }
 		$options['border'] = $_POST['border'];
+		$options['customfield'] = $_POST['customfield'];
 		$options['content'] = $_POST['content'];
 		$options['excerpt'] = $_POST['excerpt'];
 		update_option('tp_options', $options);
@@ -546,7 +552,8 @@ function tp_manage_options() {
 			for (i=0; i<9; i++) {
 				if(getColor[i].checked) { color = i+1; }
 			}
-			preview = '<img src="'+siteURL+'/wp-content/plugins/tubepress.net/images/';
+			//preview = '<img src="'+siteURL+'/wp-content/plugins/tubepress.net/images/';
+			preview = '<img src="<?= plugins_url('/images/',__FILE__); ?>';
 			
 			if(border.checked == true){
 				preview += 'border';
@@ -572,7 +579,7 @@ function tp_manage_options() {
 				<td><?php _e('Video Player Width'); ?></td>
 				<td><input name="width" type="text" id="width" value="<?php echo $options['width']; ?>" /></td>
 				<?php $type = ($options['border']) ? 'border' : 'color'; ?>
-				<td rowspan="6"><div id="tp-preview" <?php if($options['color']==0) echo 'style="display:none;"';?>><img src="<?php echo get_option('siteurl'); ?>/wp-content/plugins/tubepress.net/images/<?=$type.$options['color']?>.gif" alt="" /></div></td>
+				<td rowspan="6"><div id="tp-preview" <?php if($options['color']==0) echo 'style="display:none;"';?>><img src="<?php echo plugins_url('/images/'.$type.$options['color'].'.gif',__FILE__); ?>" alt="" /></div></td>
 			</tr>
 			<tr>
 				<td><?php _e('Video Player Height'); ?></td>
@@ -610,7 +617,7 @@ function tp_manage_options() {
 			</tr>
 			<tr>
 				<td><?php _e('Use WP JW Player'); ?></td>
-				<td><input onclick="tpToggle();" name="color" id="color" type="radio" value="0" <?php if($options['color']==0) echo 'checked="checked"'; ?>>
+				<td><input onclick="tpToggle();" name="color" id="color" type="radio" value="0" <?php if($options['color']==0 && class_exists('wpjp_JWPlayerAdmin')) echo 'checked="checked"'; ?>>
 				<?php if(!class_exists('wpjp_JWPlayerAdmin')) _e('WP JW Player Plugin is required. <a href="http://downloads.wordpress.org/plugin/wp-jw-player.zip">Download it here</a>'); ?></td>
 			</tr>
 			<tr>
@@ -621,7 +628,7 @@ function tp_manage_options() {
 			</tr>
 			<tr><td>&nbsp;</td></tr>
 			<tr>
-				<td><?php _e('Check for Duplication'); ?></td>
+				<td><?php _e('Remove Duplication'); ?></td>
 				<td colspan="2"><input name="duplicate" type="checkbox" id="duplicate" value="$options['duplicate']" <?php if($options['duplicate']) echo 'checked="checked"'; ?> /></td>
 			</tr>
 			<tr>
@@ -632,6 +639,11 @@ function tp_manage_options() {
 						<option value="page" <?php if($options['type']=='page') echo 'selected="selected"'; ?>>page</option>
 					</select>
 				</td>
+			</tr>
+			<tr>
+				<td><?php _e('Add Custom Fields'); ?></td>
+				<td colspan="2"><input name="customfield" type="checkbox" id="customfield" value="$options['customfield']" <?php if($options['customfield']) echo 'checked="checked"'; ?> />
+				Custom Fields: tp_player, tp_thumbnail, tp_title, tp_description, tp_duration, tp_author, tp_tags, tp_rating_num, tp_rating_img, tp_viewcount, tp_id, tp_url</td>
 			</tr>
 			<tr>
 				<td><?php _e('Content Template'); ?></td>
