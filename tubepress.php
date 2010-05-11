@@ -4,7 +4,7 @@ Plugin Name: TubePress.Net
 Plugin URI: http://www.tubepress.net/
 Description:  The Youtube Plugin for Wordpress
 Author: Mario Mansour
-Version: 3.1.4
+Version: 3.1.5
 Author URI: http://www.mariomansour.org/
 */
 class youtube {
@@ -44,8 +44,8 @@ class youtube {
 	function getGdataRsp($functionName, $payload) {
 		global $json,$client;
 		$this->url = $this->buildQuery($functionName, $payload);
-		$client->fetch($this->url);
-		$response = $json->decode($client->results);
+		//$client->fetch($this->url);
+		$response = json_decode(tp_fetch($this->url),true);
 		return $response;
 	}
 	function buildQuery($functionName, $payload) {
@@ -60,14 +60,27 @@ class youtube {
 	}
 }
 
-if(!class_exists('Services_JSON')) {
-	require_once('JSON.php');
+if(!function_exists('json_decode') ){
+	function json_decode($content, $assoc=false){
+		require_once('JSON.php');
+		if ( $assoc ){
+			$json = new Services_JSON(SERVICES_JSON_LOOSE_TYPE);
+		} else {
+			$json = new Services_JSON;
+		}
+		return $json->decode($content);
+	}
 }
-if(!class_exists('Snoopy')) {
-	require_once( ABSPATH . WPINC . '/class-snoopy.php');
+
+function tp_fetch($url) {
+	if(!class_exists('Snoopy')) {
+		require_once( ABSPATH . WPINC . '/class-snoopy.php');
+	}
+	$client = new Snoopy();
+	$client->fetch($url);
+	return $client->results;
 }
-$client = new Snoopy();
-$json = new Services_JSON(SERVICES_JSON_LOOSE_TYPE);
+
 $yt = new youtube();
 
 function tp_get_list($options,$action='tag') {
