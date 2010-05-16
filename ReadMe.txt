@@ -30,6 +30,7 @@ Import Youtube Videos directly into your wordpress blog post or pages.
 
 == Change Log ==
 
+3.1.6	Fixed Fatal error: Call to a member function fetch() on a non-object in .../wp-content/plugins/tubepressnet/tubepress.php on line 515
 3.1.5	Fixed json decoding to parse large objects, accepting max-results larger than 10
 
 **Change in 3.0**

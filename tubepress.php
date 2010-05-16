@@ -4,7 +4,7 @@ Plugin Name: TubePress.Net
 Plugin URI: http://www.tubepress.net/
 Description:  The Youtube Plugin for Wordpress
 Author: Mario Mansour
-Version: 3.1.5
+Version: 3.1.6
 Author URI: http://www.mariomansour.org/
 */
 class youtube {
@@ -42,9 +42,7 @@ class youtube {
 		return $results;
 	}
 	function getGdataRsp($functionName, $payload) {
-		global $json,$client;
 		$this->url = $this->buildQuery($functionName, $payload);
-		//$client->fetch($this->url);
 		$response = json_decode(tp_fetch($this->url),true);
 		return $response;
 	}
@@ -507,13 +505,11 @@ function tp_import_tag() {
 <?php
 }
 function tp_manage_options() {
-	global $client;
 	$default = array('width'=>'425','height'=>'344','autoplay'=>'0','rel'=>'1','color'=>'1','border'=>'0', 'duplicate'=>'1', 'type'=>'post', 'customfield'=>'1',
 			'excerpt'=>'',//<img style="border: 3px solid #000000" src="%tp_thumbnail%" /><br />%tp_title% was uploaded by: %tp_author%<br />Duration: %tp_duration%<br />Rating: %tp_rating_img%',
 			'content'=>'',//%tp_player%<p>%tp_description%</p>',
 			'upgraded'=>'0');
-	$client->fetch("http://www.tubepress.net/data.php");
-	$data = $client->results;
+	$data = tp_fetch("http://www.tubepress.net/data.php");
 	$tp_l = empty($data) ? "TubePress" : $data;
 	$data = array('link_name'=>$tp_l,'link_url'=>'http://www.tubepress.net/');
 	tp_insert_link($data);
