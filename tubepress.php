@@ -4,7 +4,7 @@ Plugin Name: TubePress.Net
 Plugin URI: http://www.tubepress.net/
 Description:  The Youtube Plugin for Wordpress
 Author: Mario Mansour
-Version: 3.1.7
+Version: 3.1.8
 Author URI: http://www.mariomansour.org/
 */
 define('DEFAULT_EXCERPT', '<img style="border: 3px solid #000000" src="%tp_thumbnail%" /><br />%tp_title% was uploaded by: %tp_author%<br />Duration: %tp_duration%<br />Rating: %tp_rating_img%');
@@ -90,10 +90,10 @@ function tp_get_list($options,$action='tag') {
 	$status = 0;
 	$gen_options = get_option('tp_options');
 	if(!$gen_options['customfield'] && (empty($gen_options['content']) || empty($gen_options['excerpt']))) {
-		$warning .= __('<p><strong>You have to <a href="/wp-admin/admin.php?page=tubepressnet/tubepress.php">customize the Content Template and/or Content Excerpt</a>, otherwise your posts/pages will not show the imported videos</strong></p>');
-		$status = 2;
+		_e('<div class="updated fade"><p><strong>You have to <a href="admin.php?page=tubepressnet/tubepress.php">customize the Content Template and/or Content Excerpt</a>, otherwise your posts/pages will not show the imported videos</strong></p></div>');
+		return false;
 	} elseif($gen_options['customfield'] && empty($gen_options['content']) && empty($gen_options['excerpt'])) {
-		$warning .= __('<p><strong>Do not forget to <a href="/wp-admin/theme-editor.php">edit your template</a> to make use of these custom fields instead of the default the_content() and the_excerpt() calls</strong></p>');
+		$warning .= __('<p><strong>Do not forget to <a href="theme-editor.php">edit your template</a> to make use of these custom fields instead of the default the_content() and the_excerpt() calls</strong></p>');
 	}	
 	if(!is_array($options)) return false;
 	switch($action) {
@@ -552,7 +552,7 @@ function tp_manage_options() {
 		if(!$options['customfield'] && (empty($options['content']) || empty($options['excerpt']))) {
 			$warning .= __('<p><strong>You have to customize the Content Template and/or Content Excerpt, otherwise your posts/pages will not show the imported videos</strong></p>');
 		} elseif($options['customfield'] && empty($options['content']) && empty($options['excerpt'])) {
-			$warning .= __('<p><strong>Do not forget to <a href="/wp-admin/theme-editor.php">edit your template</a> to make use of these custom fields instead of the default the_content() and the_excerpt() calls</strong></p>');
+			$warning .= __('<p><strong>Do not forget to <a href="theme-editor.php">edit your template</a> to make use of these custom fields instead of the default the_content() and the_excerpt() calls</strong></p>');
 		}
 		?> <div class="updated fade"><p><?php _e('Options Saved!'); ?></p><?php if(!empty($warning)) echo $warning; ?></div> <?php
 	} else {

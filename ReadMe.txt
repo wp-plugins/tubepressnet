@@ -30,9 +30,14 @@ Import Youtube Videos directly into your wordpress blog post or pages.
 
 == Change Log ==
 
+= 3.1.8 =
+*Importing is blocked when TubePress is not correctly setup.
+*Fixed links to the plugin's internal pages in warning messages.
+*Template Content and Template Excerpt
+
 = 3.1.7 =
 *Improved remove duplication function
-*Added fault handling against wrong configuration (Template Content, Template Excerpt and Usage of Custom Fields)
+*Added fault handling for wrong setup (Template Content, Template Excerpt and Usage of Custom Fields)
 
 = 3.1.6 =
 *Fixed Fatal error: Call to a member function fetch() on a non-object in .../wp-content/plugins/tubepressnet/tubepress.php on line 515
