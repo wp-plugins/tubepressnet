@@ -30,11 +30,17 @@ Import Youtube Videos directly into your wordpress blog post or pages.
 
 == Change Log ==
 
-3.1.6	Fixed Fatal error: Call to a member function fetch() on a non-object in .../wp-content/plugins/tubepressnet/tubepress.php on line 515
-3.1.5	Fixed json decoding to parse large objects, accepting max-results larger than 10
+= 3.1.7 =
+*Improved remove duplication function
+*Added fault handling against wrong configuration (Template Content, Template Excerpt and Usage of Custom Fields)
 
-**Change in 3.0**
+= 3.1.6 =
+*Fixed Fatal error: Call to a member function fetch() on a non-object in .../wp-content/plugins/tubepressnet/tubepress.php on line 515
 
+= 3.1.5 =
+*Fixed json decoding to parse large objects, accepting max-results larger than 10
+
+= 3.0 =
 * Complete rewrite of the core code to support WP 2.6 and even later wordpress versions
 * Change in the posting structure
 * Added page support
@@ -42,63 +48,50 @@ Import Youtube Videos directly into your wordpress blog post or pages.
 * Added upgrade function for backward compatibility
 * And more cool features
 
-**Changes in v2.6**
-
+= 2.6 =
 * Added option to show/hide related videos inside the player
 * Fixed some bugs
 * Import single video by id
 
-**Changes in v2.5**
+= 2.5 =
+Added customized adsense
 
-* Added customized adsense
+= 2.4 =
+Import the featured videos in youtube
 
-**Changes in v2.4**
+= 2.35 =
+Import your favorite videos from youtube
 
-* Import the featured videos in youtube
+= 2.3 =
+Multi language support
 
-**Changes in v2.35:**
+= 2.2 =
+Import your youtube videos or any user videos
 
-* Import your favorite videos from youtube
+= 2.1 =
+Added tags to category import
 
-**Changes in v2.3:**
-
-* Multi language support
-
-**Changes in v2.2:**
-
-* Import your youtube videos or any user videos
-
-**Changes in v2.1:**
-
-* Added tags to category import
-
-**Changes in v2.0:**
-
+= 2.0 =
 * Added new import features from youtube
 * Added customized view options
 * Added customized video display properties
 * Post writing changed, implementing TP code
 * Fixed bug when manually posting into wordpress or changing an imported post
 
-**Changes in v1.4:**
+= 1.4 =
+Added new video properties
 
-* Added new video properties
+= 1.3 =
+Added Thumbnail view option
 
-**Changes in v1.3:**
+= 1.2 =
+Added image format for the average rating
 
-* Added Thumbnail view option
+= 1.1 =
+Added default settings
 
-**Changes in v1.2:**
-
-* Added image format for the average rating
-
-**Changes in v1.1:**
-
-* Added default settings
-
-**TubePress 1.0:**
-
-* First release of TubePress with basic video import
+= 1.0 =
+First release of TubePress with basic video import
 
 == Info ==
 

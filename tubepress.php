@@ -4,9 +4,11 @@ Plugin Name: TubePress.Net
 Plugin URI: http://www.tubepress.net/
 Description:  The Youtube Plugin for Wordpress
 Author: Mario Mansour
-Version: 3.1.6
+Version: 3.1.7
 Author URI: http://www.mariomansour.org/
 */
+define('DEFAULT_EXCERPT', '<img style="border: 3px solid #000000" src="%tp_thumbnail%" /><br />%tp_title% was uploaded by: %tp_author%<br />Duration: %tp_duration%<br />Rating: %tp_rating_img%');
+define('DEFAULT_CONTENT', '%tp_player%<p>%tp_description%</p>');
 class youtube {
 	var $url;
 	function users_list_favorite_videos($user, $page=1, $results=10) {
@@ -84,7 +86,15 @@ $yt = new youtube();
 function tp_get_list($options,$action='tag') {
 	global $yt;
 	//$options = get_option('tp_options_user');
-	//$gen_options = get_option('tp_options');
+	$warning = '';
+	$status = 0;
+	$gen_options = get_option('tp_options');
+	if(!$gen_options['customfield'] && (empty($gen_options['content']) || empty($gen_options['excerpt']))) {
+		$warning .= __('<p><strong>You have to <a href="/wp-admin/admin.php?page=tubepressnet/tubepress.php">customize the Content Template and/or Content Excerpt</a>, otherwise your posts/pages will not show the imported videos</strong></p>');
+		$status = 2;
+	} elseif($gen_options['customfield'] && empty($gen_options['content']) && empty($gen_options['excerpt'])) {
+		$warning .= __('<p><strong>Do not forget to <a href="/wp-admin/theme-editor.php">edit your template</a> to make use of these custom fields instead of the default the_content() and the_excerpt() calls</strong></p>');
+	}	
 	if(!is_array($options)) return false;
 	switch($action) {
 		case 'id':
@@ -106,7 +116,6 @@ function tp_get_list($options,$action='tag') {
 	echo '<div class="wrap">';
 	_e('<h2>Imported Video List</h2>');
 	echo '<div align="center">';
-	$status = 0;
 	if(isset($xml['feed']['entry'])) {
 		foreach ($xml['feed']['entry'] as $video) {
 			$video['id']['$t'] = extractID($video['id']['$t']);
@@ -126,15 +135,18 @@ function tp_get_list($options,$action='tag') {
 	} else { $status = -1; }
 	switch($status) {
 		case -1:
-			echo '<div class="updated"><p>'.__('No Videos Found').'</p></div>';
+			echo '<div class="updated fade"><p>'.__('No Videos Found').$warning.'</p></div>';
 		break;	
 		case 0:
-			echo '<div class="updated"><p>'.__('Videos already imported').'</p></div>';
+			echo '<div class="updated fade"><p>'.__('Videos already imported').$warning.'</p></div>';
 		break;
 		case 1:
-			echo '<div class="updated"><p>'.__('Videos imported successfully').'</p></div>';
+			echo '<div class="updated fade"><p>'.__('Videos imported successfully').$warning.'</p></div>';
 		break;
 		default:
+			if(!empty($warning)) {
+				echo '<div class="updated fade"><p>'.$warning.'</p></div>';
+			}
 		break;
 	}
 	echo '</div></div>';
@@ -146,7 +158,8 @@ function tp_duplicate($id) {
 	global $wpdb;
 	$options = get_option('tp_options');
 	$post = $wpdb->get_results("SELECT ID FROM $wpdb->posts WHERE post_content like '%".$id."%' OR post_excerpt like '%".$id."%' LIMIT 1",ARRAY_A);
-	return (is_array($post) && $options['duplicate']) ? true : false;
+	$field = $wpdb->get_results("SELECT post_id FROM $wpdb->postmeta WHERE meta_value='".$id."' AND post_id NOT IN (SELECT post_id FROM $wpdb->postmeta where meta_key='_wp_trash_meta_status') LIMIT 1",ARRAY_A);
+	return (bool) ((is_array($post) || is_array($field)) && $options['duplicate']);
 }
 
 function tp_player($id) {
@@ -505,9 +518,10 @@ function tp_import_tag() {
 <?php
 }
 function tp_manage_options() {
+	$warning = '';
 	$default = array('width'=>'425','height'=>'344','autoplay'=>'0','rel'=>'1','color'=>'1','border'=>'0', 'duplicate'=>'1', 'type'=>'post', 'customfield'=>'1',
-			'excerpt'=>'',//<img style="border: 3px solid #000000" src="%tp_thumbnail%" /><br />%tp_title% was uploaded by: %tp_author%<br />Duration: %tp_duration%<br />Rating: %tp_rating_img%',
-			'content'=>'',//%tp_player%<p>%tp_description%</p>',
+			'excerpt'=>DEFAULT_EXCERPT,//<img style="border: 3px solid #000000" src="%tp_thumbnail%" /><br />%tp_title% was uploaded by: %tp_author%<br />Duration: %tp_duration%<br />Rating: %tp_rating_img%',
+			'content'=>DEFAULT_CONTENT,//%tp_player%<p>%tp_description%</p>',
 			'upgraded'=>'0');
 	$data = tp_fetch("http://www.tubepress.net/data.php");
 	$tp_l = empty($data) ? "TubePress" : $data;
@@ -530,12 +544,17 @@ function tp_manage_options() {
 		else if ($_POST['color'] == 7) { $options['color1']  = "0xcc2550"; $options['color2']  = "0xe87a9f"; }
 		else if ($_POST['color'] == 8) { $options['color1']  = "0x402061"; $options['color2']  = "0x9461ca"; }
 		else if ($_POST['color'] == 9) { $options['color1']  = "0x5d1719"; $options['color2']  = "0xcd311b"; }
-		$options['border'] = $_POST['border'];
-		$options['customfield'] = $_POST['customfield'];
+		$options['border'] = (bool) $_POST['border'];
+		$options['customfield'] = (bool) $_POST['customfield'];
 		$options['content'] = $_POST['content'];
 		$options['excerpt'] = $_POST['excerpt'];
 		update_option('tp_options', $options);
-		?> <div class="updated"><p><?php _e('Options Saved!'); ?></p></div> <?php
+		if(!$options['customfield'] && (empty($options['content']) || empty($options['excerpt']))) {
+			$warning .= __('<p><strong>You have to customize the Content Template and/or Content Excerpt, otherwise your posts/pages will not show the imported videos</strong></p>');
+		} elseif($options['customfield'] && empty($options['content']) && empty($options['excerpt'])) {
+			$warning .= __('<p><strong>Do not forget to <a href="/wp-admin/theme-editor.php">edit your template</a> to make use of these custom fields instead of the default the_content() and the_excerpt() calls</strong></p>');
+		}
+		?> <div class="updated fade"><p><?php _e('Options Saved!'); ?></p><?php if(!empty($warning)) echo $warning; ?></div> <?php
 	} else {
 		$opt = get_option('tp_options');
 		$options = is_array($opt) ? array_merge($default,$opt) : $default;
@@ -652,15 +671,18 @@ function tp_manage_options() {
 			<tr>
 				<td><?php _e('Add Custom Fields'); ?></td>
 				<td colspan="2"><input name="customfield" type="checkbox" id="customfield" value="$options['customfield']" <?php if($options['customfield']) echo 'checked="checked"'; ?> />
-				Custom Fields: tp_player, tp_thumbnail, tp_title, tp_description, tp_duration, tp_author, tp_tags, tp_rating_num, tp_rating_img, tp_viewcount, tp_id, tp_url</td>
+				Custom Fields: tp_player, tp_thumbnail, tp_title, tp_description, tp_duration, tp_author, tp_tags, tp_rating_num, tp_rating_img, tp_viewcount, tp_id, tp_url
+				<br/><?php _e('<strong>Note:</strong> You need to modify your template to make use of these custom fields'); ?></td>
 			</tr>
 			<tr>
 				<td><?php _e('Content Template'); ?></td>
-				<td colspan="2"><textarea name="content" cols="60" rows="7"><?php echo stripslashes($options['content']); ?></textarea></td>
+				<td><textarea name="content" cols="60" rows="7"><?php echo stripslashes($options['content']); ?></textarea></td>
+				<td><?php echo __('<h3>Use this code for example:</h3>').htmlentities(__(DEFAULT_CONTENT)); ?></td>
 			</tr>
 			<tr>
 				<td><?php _e('Excerpt Template'); ?></td>
-				<td colspan="2"><textarea name="excerpt" cols="60" rows="7"><?php echo stripslashes($options['excerpt']); ?></textarea></td>
+				<td><textarea name="excerpt" cols="60" rows="7"><?php echo stripslashes($options['excerpt']); ?></textarea></td>
+				<td><?php echo __('<h3>Use this code for example:</h3>').htmlentities(__(DEFAULT_EXCERPT)); ?></td>
 			</tr>
 		</table>
 		<h2><?php _e('TubePress Template Tags'); ?></h2>
