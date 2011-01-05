@@ -4,7 +4,7 @@ Plugin Name: TubePress.Net
 Plugin URI: http://www.tubepress.net/
 Description:  The Youtube Plugin for Wordpress
 Author: Mario Mansour
-Version: 3.1.9
+Version: 3.2.0
 Author URI: http://www.mariomansour.org/
 */
 define('DEFAULT_EXCERPT', '<img style="border: 3px solid #000000" src="%tp_thumbnail%" /><br />%tp_title% was uploaded by: %tp_author%<br />Duration: %tp_duration%<br />Rating: %tp_rating_img%');
@@ -181,7 +181,7 @@ function tp_player($id) {
 	$pl .= $param.'"></param><param name="allowFullScreen" value="true"></param>'.$auto;
 	$pl .= '<embed src="http://www.youtube.com/v/'.$id.$param.'" type="application/x-shockwave-flash" allowfullscreen="true" width="'.$opt['width'].'" height="'.$opt['height'].'"></embed></object>';
 	if ($opt['color']==0) {
-		$pl = '[wp-jw-player src="http://www.youtube.com/watch?v='.$id.'"]';
+		$pl = '[wp-jw-player src="http://www.youtube.com/watch?v='.$id.'" image="http://i.ytimg.com/vi/'.$id.'/default.jpg"]';
 	}
 	return $pl;
 }
