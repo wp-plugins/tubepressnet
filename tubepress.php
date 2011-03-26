@@ -4,7 +4,7 @@ Plugin Name: TubePress.Net
 Plugin URI: http://www.tubepress.net/
 Description:  The Youtube Plugin for Wordpress
 Author: Mario Mansour
-Version: 3.2.0
+Version: 3.2.1
 Author URI: http://www.mariomansour.org/
 */
 define('DEFAULT_EXCERPT', '<img style="border: 3px solid #000000" src="%tp_thumbnail%" /><br />%tp_title% was uploaded by: %tp_author%<br />Duration: %tp_duration%<br />Rating: %tp_rating_img%');
@@ -200,6 +200,7 @@ function tp_write_post($v,$opt) {
 	$tpo = get_option('tp_options');
 	$post_template_excerpt = $tpo['excerpt'];
 	$post_template_content = $tpo['content'];
+	$post_status = !empty($tpo['status']) ? $tpo['status'] : 'publish';
 	$vid = (!empty($v['id']['$t'])) ? $v['id']['$t'] : $opt['video_id'];
 	
 	$tp_tags = array("%tp_player%","%tp_id%","%tp_title%","%tp_thumbnail%","%tp_description%","%tp_duration%","%tp_rating_num%","%tp_rating_img%","%tp_viewcount%","%tp_author%","%tp_tags%","%tp_url%");
@@ -211,7 +212,7 @@ function tp_write_post($v,$opt) {
 	$post_tags = explode(', ', trim($v['media$group']['media$keywords']['$t']," \n\t\r\0\x0B,"));
 	$tp_post = array('post_title' => $v['title']['$t'],
 			'post_content' => $post_template_content,
-			'post_status' => 'publish',
+			'post_status' => $post_status,
 			'post_type' => $tpo['type'],
 			'post_name' => sanitize_title($v['title']['$t']),
 			'post_category' => $post_category,
@@ -519,7 +520,7 @@ function tp_import_tag() {
 }
 function tp_manage_options() {
 	$warning = '';
-	$default = array('width'=>'425','height'=>'344','autoplay'=>'0','rel'=>'1','color'=>'1','border'=>'0', 'duplicate'=>'1', 'type'=>'post', 'customfield'=>'0',
+	$default = array('width'=>'425','height'=>'344','autoplay'=>'0','rel'=>'1','color'=>'1','border'=>'0', 'duplicate'=>'1', 'type'=>'post', 'status'=>'publish', 'customfield'=>'0',
 			'excerpt'=>'',//<img style="border: 3px solid #000000" src="%tp_thumbnail%" /><br />%tp_title% was uploaded by: %tp_author%<br />Duration: %tp_duration%<br />Rating: %tp_rating_img%',
 			'content'=>'',//%tp_player%<p>%tp_description%</p>',
 			'upgraded'=>'0');
@@ -531,6 +532,7 @@ function tp_manage_options() {
 		$options['width'] = $_POST['width'];
 		$options['height'] = $_POST['height'];
 		$options['autoplay'] = (bool) $_POST['autoplay'];
+		$options['status'] = $_POST['status'];
 		$options['type'] = $_POST['type'];
 		$options['duplicate'] = (bool) $_POST['duplicate'];
 		$options['rel'] = (bool) $_POST['rel'];
@@ -665,6 +667,17 @@ function tp_manage_options() {
 					<select name="type" id="type">
 						<option value="post" <?php if($options['type']=='post') echo 'selected="selected"'; ?>>post</option>
 						<option value="page" <?php if($options['type']=='page') echo 'selected="selected"'; ?>>page</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td><?php _e('Post Status'); ?></td>
+				<td colspan="2">
+					<select name="status" id="status">
+						<option value="publish" <?php if($options['status']=='publish') echo 'selected="selected"'; ?>>Published</option>
+						<option value="pending" <?php if($options['status']=='pending') echo 'selected="selected"'; ?>>Pending</option>
+						<option value="draft" <?php if($options['status']=='draft') echo 'selected="selected"'; ?>>Draft</option>
+						<option value="private" <?php if($options['status']=='private') echo 'selected="selected"'; ?>>Private</option>
 					</select>
 				</td>
 			</tr>

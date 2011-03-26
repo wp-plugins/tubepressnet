@@ -3,7 +3,7 @@ Contributors: Mario Mansour
 Donate link: http://www.tubepress.net/
 Tags: wordpress video plugin, youtube, video, import youtube videos, wordpress plugins, wordpress youtube, youtube wordpress
 Requires at least: 2.7
-Tested up to: 3.0.4
+Tested up to: 3.1
 Stable tag: trunk
 
 Import Youtube Videos directly into your wordpress blog post or pages.
@@ -29,6 +29,9 @@ Import Youtube Videos directly into your wordpress blog post or pages.
 
 
 == Change Log ==
+= 3.2.1 =
+* Added option to set the post/page status (publish, pending, draft, private) for imported videos.
+
 = 3.2.0 =
 * Added support for image attribute in WP JW Player to allow image preview when using WP JW Player plugin.
 
