@@ -853,6 +853,7 @@ function tp_upgrade() {
 
 function tp_add_options_page() {
 	add_menu_page('TubePress', 'TubePress', 8, __FILE__, 'tp_manage_options');
+	add_submenu_page(__FILE__, 'Setup', 'Setup', 8, __FILE__, 'tp_manage_options');
 	add_submenu_page(__FILE__, 'Import By Tag', 'Import By Tag', 8, 'tubepress-tag.php', 'tp_import_tag');
 	add_submenu_page(__FILE__, 'My Videos', 'My Videos', 8, 'tubepress-user.php', 'tp_import_user');
 	add_submenu_page(__FILE__, 'My Favorite Videos', 'My Favorite Videos', 8, 'tubepress-favorite.php', 'tp_import_favorite');
