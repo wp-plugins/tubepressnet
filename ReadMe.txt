@@ -29,6 +29,10 @@ Import Youtube Videos directly into your wordpress blog post or pages.
 
 
 == Change Log ==
+= 3.2.2 =
+* Removed base64 encoding of Paypal donation button. Now appears as normal HTML code.
+* Blogroll link permission is added to the settings.
+
 = 3.2.1 =
 * Added option to set the post/page status (publish, pending, draft, private) for imported videos.
 

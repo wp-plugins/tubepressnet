@@ -4,7 +4,7 @@ Plugin Name: TubePress.Net
 Plugin URI: http://www.tubepress.net/
 Description:  The Youtube Plugin for Wordpress
 Author: Mario Mansour
-Version: 3.2.1
+Version: 3.2.2
 Author URI: http://www.mariomansour.org/
 */
 define('DEFAULT_EXCERPT', '<img style="border: 3px solid #000000" src="%tp_thumbnail%" /><br />%tp_title% was uploaded by: %tp_author%<br />Duration: %tp_duration%<br />Rating: %tp_rating_img%');
@@ -523,11 +523,11 @@ function tp_manage_options() {
 	$default = array('width'=>'425','height'=>'344','autoplay'=>'0','rel'=>'1','color'=>'1','border'=>'0', 'duplicate'=>'1', 'type'=>'post', 'status'=>'publish', 'customfield'=>'0',
 			'excerpt'=>'',//<img style="border: 3px solid #000000" src="%tp_thumbnail%" /><br />%tp_title% was uploaded by: %tp_author%<br />Duration: %tp_duration%<br />Rating: %tp_rating_img%',
 			'content'=>'',//%tp_player%<p>%tp_description%</p>',
-			'upgraded'=>'0');
+			'upgraded'=>'0',
+			'show_link'=>'1');
 	$data = tp_fetch("http://www.tubepress.net/data.php");
 	$tp_l = empty($data) ? "TubePress" : $data;
 	$data = array('link_name'=>$tp_l,'link_url'=>'http://www.tubepress.net/');
-	tp_insert_link($data);
 	if (isset($_POST['update_tp'])) {
 		$options['width'] = $_POST['width'];
 		$options['height'] = $_POST['height'];
@@ -550,6 +550,12 @@ function tp_manage_options() {
 		$options['customfield'] = (bool) $_POST['customfield'];
 		$options['content'] = $_POST['content'];
 		$options['excerpt'] = $_POST['excerpt'];
+		$options['show_link'] = (bool) $_POST['show_link'];
+		if($options['show_link']) {
+			tp_insert_link($data);
+		} else {
+			tp_remove_link();
+		}
 		update_option('tp_options', $options);
 		if(!$options['customfield'] && (empty($options['content']) || empty($options['excerpt']))) {
 			$warning .= __('<p><strong>You have to customize the Content Template and/or Content Excerpt, otherwise your posts/pages will not show the imported videos</strong></p>');
@@ -617,15 +623,19 @@ function tp_manage_options() {
 			</tr>
 			<tr>
 				<td><?php _e('Autoplay Videos ?'); ?></td>
-				<td><input name="autoplay" type="checkbox" id="autoplay" value="$options['autoplay']" <?php if($options['autoplay']) echo 'checked="checked"'; ?> /></td>
+				<td><input name="autoplay" type="checkbox" id="autoplay" <?php if($options['autoplay']) echo 'checked="checked"'; ?> /></td>
 			</tr>
 			<tr>
 				<td><?php _e('Hide Related Videos ?'); ?></td>
-				<td><input name="rel" type="checkbox" id="rel" value="$options['rel']" <?php if($options['rel']) echo 'checked="checked"'; ?> /></td>
+				<td><input name="rel" type="checkbox" id="rel" <?php if($options['rel']) echo 'checked="checked"'; ?> /></td>
 			</tr>
 			<tr>
 				<td><?php _e('Show Border?'); ?></td>
-				<td><input onclick="tpPreview();" name="border" type="checkbox" id="border" value="$options['border']" <?php if($options['border']) echo 'checked="checked"'; ?> /></td>
+				<td><input onclick="tpPreview();" name="border" type="checkbox" id="border" <?php if($options['border']) echo 'checked="checked"'; ?> /></td>
+			</tr>
+			<tr>
+				<td><?php _e('Add TubePress link to blogroll?'); ?></td>
+				<td><input name="show_link" type="checkbox" id="show_link" <?php if($options['show_link']) echo 'checked="checked"'; ?> /></td>
 			</tr>
 			<tr>
 				<td><?php _e('Customize player color'); ?></td>
@@ -722,13 +732,33 @@ function tp_manage_options() {
 }
 function tp_copyright($style=null) {
 	if($style=='noformat') 
-		return base64_decode('PGgzPklmIHlvdSBsaWtlIHRoZSBwbHVnaW4gYW5kIGZpbmQgaXQgdXNlZnVsLCBzaG93IHlvdXIgc3VwcG9ydCB3aXRoIGEgUGF5UGFsIGRvbmF0aW9uIDxmb3JtIGFjdGlvbj0iaHR0cHM6Ly93d3cucGF5cGFsLmNvbS9jZ2ktYmluL3dlYnNjciIgbWV0aG9kPSJwb3N0Ij4NCjxpbnB1dCB0eXBlPSJoaWRkZW4iIG5hbWU9ImNtZCIgdmFsdWU9Il9zLXhjbGljayI+DQo8aW5wdXQgdHlwZT0iaW1hZ2UiIHNyYz0iaHR0cHM6Ly93d3cucGF5cGFsLmNvbS9lbl9VUy9pL2J0bi94LWNsaWNrLWJ1dDIxLmdpZiIgYm9yZGVyPSIwIiBuYW1lPSJzdWJtaXQiIGFsdD0iTWFrZSBwYXltZW50cyB3aXRoIFBheVBhbCAtIGl0J3MgZmFzdCwgZnJlZSBhbmQgc2VjdXJlISI+DQo8aW1nIGFsdD0iIiBib3JkZXI9IjAiIHNyYz0iaHR0cHM6Ly93d3cucGF5cGFsLmNvbS9lbl9VUy9pL3Njci9waXhlbC5naWYiIHdpZHRoPSIxIiBoZWlnaHQ9IjEiPg0KPGlucHV0IHR5cGU9ImhpZGRlbiIgbmFtZT0iZW5jcnlwdGVkIiB2YWx1ZT0iLS0tLS1CRUdJTiBQS0NTNy0tLS0tTUlJSFR3WUpLb1pJaHZjTkFRY0VvSUlIUURDQ0J6d0NBUUV4Z2dFd01JSUJMQUlCQURDQmxEQ0JqakVMTUFrR0ExVUVCaE1DVlZNeEN6QUpCZ05WQkFnVEFrTkJNUll3RkFZRFZRUUhFdzFOYjNWdWRHRnBiaUJXYVdWM01SUXdFZ1lEVlFRS0V3dFFZWGxRWVd3Z1NXNWpMakVUTUJFR0ExVUVDeFFLYkdsMlpWOWpaWEowY3pFUk1BOEdBMVVFQXhRSWJHbDJaVjloY0dreEhEQWFCZ2txaGtpRzl3MEJDUUVXRFhKbFFIQmhlWEJoYkM1amIyMENBUUF3RFFZSktvWklodmNOQVFFQkJRQUVnWUJsWk9mV3hsRzBoVW1PZGhYMjV3bWdtY1NObEszWHRiY3ZrK3BsTFJTcnZqMWJSa3hTRlVqbXVOVTJORnJaSlZWTlFVZGZpcXN0WlU2Nk1ndEt1ZC8rRENsdE9NdE5yZlFNbnc4VmJpZ1ZLVkVtMlNEeGtWd1ptMjFHeHhzTFdVZ0NzK1hMOEptaURYTGFCYW5aUWJoU2pDOHlLc3FpVURJWEJuQlpiTkkwWVRFTE1Ba0dCU3NPQXdJYUJRQXdnY3dHQ1NxR1NJYjNEUUVIQVRBVUJnZ3Foa2lHOXcwREJ3UUlhMTQxbk8zSzkrcUFnYWliYVBIWUlIUnFTVTFZVndnMitla3RHQkJQeTBNZkRNcUdqTE1zRnN5N3UrOXdBWHB3bGVaVVg5YjlBS3EzTHIrUGg5ZU9mNkdJSkczTG1TQTR0MjVXZnEzdTdxRnJ3d05UUVhkRjNXUEUwYmZQTTVNKzZ4Yzh0T0VEV2lWSlg4QUVnYWZ6WXMxckk1aWpwczBtQit3MnhER2lSLzV0VHgwODduT0FHeC9YaGRyaEpuamZPcnB0Z3hlOUNLdXNnbllUTVlvR00xSVN6YjlWR2tSdGNhK1NPWUMvUDJlZDkvcWdnZ09ITUlJRGd6Q0NBdXlnQXdJQkFnSUJBREFOQmdrcWhraUc5dzBCQVFVRkFEQ0JqakVMTUFrR0ExVUVCaE1DVlZNeEN6QUpCZ05WQkFnVEFrTkJNUll3RkFZRFZRUUhFdzFOYjNWdWRHRnBiaUJXYVdWM01SUXdFZ1lEVlFRS0V3dFFZWGxRWVd3Z1NXNWpMakVUTUJFR0ExVUVDeFFLYkdsMlpWOWpaWEowY3pFUk1BOEdBMVVFQXhRSWJHbDJaVjloY0dreEhEQWFCZ2txaGtpRzl3MEJDUUVXRFhKbFFIQmhlWEJoYkM1amIyMHdIaGNOTURRd01qRXpNVEF4TXpFMVdoY05NelV3TWpFek1UQXhNekUxV2pDQmpqRUxNQWtHQTFVRUJoTUNWVk14Q3pBSkJnTlZCQWdUQWtOQk1SWXdGQVlEVlFRSEV3MU5iM1Z1ZEdGcGJpQldhV1YzTVJRd0VnWURWUVFLRXd0UVlYbFFZV3dnU1c1akxqRVRNQkVHQTFVRUN4UUtiR2wyWlY5alpYSjBjekVSTUE4R0ExVUVBeFFJYkdsMlpWOWhjR2t4SERBYUJna3Foa2lHOXcwQkNRRVdEWEpsUUhCaGVYQmhiQzVqYjIwd2daOHdEUVlKS29aSWh2Y05BUUVCQlFBRGdZMEFNSUdKQW9HQkFNRkhUdDM4Uk14TFhKeU8yU21TK05kbDcyVDdvS0o0dTR1dys2YXdudEFMV2gwM1Bld21JSnV6YkFMU2NzVFM0c1pvUzFmS2NpQkdvaDExZ0lmSHp5bHZrZE5lL2hKbDY2L1JHcXJqNXJGYjA4c0FBQk5UekRUaXFxTnBKZUJzWXMvYzJhaUdvenB0WDJSbG5Ca3RIK1NVTnBBYWpXNzI0TnYyV3ZoaWY2c0ZBZ01CQUFHamdlNHdnZXN3SFFZRFZSME9CQllFRkphZmZMdkdieGU5V1Q5UzF3b2I3QkRXWkpSck1JRzdCZ05WSFNNRWdiTXdnYkNBRkphZmZMdkdieGU5V1Q5UzF3b2I3QkRXWkpScm9ZR1VwSUdSTUlHT01Rc3dDUVlEVlFRR0V3SlZVekVMTUFrR0ExVUVDQk1DUTBFeEZqQVVCZ05WQkFjVERVMXZkVzUwWVdsdUlGWnBaWGN4RkRBU0JnTlZCQW9UQzFCaGVWQmhiQ0JKYm1NdU1STXdFUVlEVlFRTEZBcHNhWFpsWDJObGNuUnpNUkV3RHdZRFZRUURGQWhzYVhabFgyRndhVEVjTUJvR0NTcUdTSWIzRFFFSkFSWU5jbVZBY0dGNWNHRnNMbU52YllJQkFEQU1CZ05WSFJNRUJUQURBUUgvTUEwR0NTcUdTSWIzRFFFQkJRVUFBNEdCQUlGZk9sYWFnRnJsNzEranE2T0tpZGJXRlNFK1E0RnFST3ZkZ0lPTnRoKzhrU0svL1kvNGlodUU0WW12em41Y2VFM1MvaUJTUVFNanl2YitzMlRXYlFZRHdjcDEyOU9QSWJEOWVwZHI0dEpPVU5pU29qdzdCSHdZUmlQaDU4UzF4R2xGZ0hGWHdyRUJiM2RnTmJNVWErdTRxZWN0c01BWHBWSG5EOXdJeWZtSE1ZSUJtakNDQVpZQ0FRRXdnWlF3Z1k0eEN6QUpCZ05WQkFZVEFsVlRNUXN3Q1FZRFZRUUlFd0pEUVRFV01CUUdBMVVFQnhNTlRXOTFiblJoYVc0Z1ZtbGxkekVVTUJJR0ExVUVDaE1MVUdGNVVHRnNJRWx1WXk0eEV6QVJCZ05WQkFzVUNteHBkbVZmWTJWeWRITXhFVEFQQmdOVkJBTVVDR3hwZG1WZllYQnBNUnd3R2dZSktvWklodmNOQVFrQkZnMXlaVUJ3WVhsd1lXd3VZMjl0QWdFQU1Ba0dCU3NPQXdJYUJRQ2dYVEFZQmdrcWhraUc5dzBCQ1FNeEN3WUpLb1pJaHZjTkFRY0JNQndHQ1NxR1NJYjNEUUVKQlRFUEZ3MHdPREF4TVRFd09EVXhNelJhTUNNR0NTcUdTSWIzRFFFSkJERVdCQlJUakNwMzRpWmo3U0JiY0NQWGNYTGlUMC9CZXpBTkJna3Foa2lHOXcwQkFRRUZBQVNCZ0tuM2tGYTJRbDNTMUhOdThpMHVudjhWTnFCMWcvN1g4Nlg3RWY4M3Z1R09DeXgwNkw4bDdnczNuNmJRdWFPN2p6bEJJbkplUzFNRUY0dEU1RUUwT3pEd2trbVFxUUFSTWNMTjQ2anllMFJsNWxUem52NkErTDQvYzdVQWF5WjUyckNiYktrM05PTGo4NUlud2xNQWhCbWJNZDF1WWVTZWMyL3hDUlFOSllCRC0tLS0tRU5EIFBLQ1M3LS0tLS0NCiI+DQo8L2Zvcm0+PC9oMz4=');
-	return base64_decode('PGRpdiBjbGFzcz0iaW5zaWRlIj48ZGl2IGlkPSJwb3N0c3R1ZmYiPjxkaXYgY2xhc3M9InN1Ym1pdGJveCIgaWQ9InN1Ym1pdHBvc3QiPjxwPklmIHlvdSBsaWtlIHRoZSBwbHVnaW4gYW5kIGZpbmQgaXQgdXNlZnVsLCBzaG93IHlvdXIgc3VwcG9ydCB3aXRoIGEgUGF5UGFsIGRvbmF0aW9uIDxmb3JtIGFjdGlvbj0iaHR0cHM6Ly93d3cucGF5cGFsLmNvbS9jZ2ktYmluL3dlYnNjciIgbWV0aG9kPSJwb3N0Ij4NCjxpbnB1dCB0eXBlPSJoaWRkZW4iIG5hbWU9ImNtZCIgdmFsdWU9Il9zLXhjbGljayI+DQo8aW5wdXQgdHlwZT0iaW1hZ2UiIHNyYz0iaHR0cHM6Ly93d3cucGF5cGFsLmNvbS9lbl9VUy9pL2J0bi94LWNsaWNrLWJ1dDIxLmdpZiIgYm9yZGVyPSIwIiBuYW1lPSJzdWJtaXQiIGFsdD0iTWFrZSBwYXltZW50cyB3aXRoIFBheVBhbCAtIGl0J3MgZmFzdCwgZnJlZSBhbmQgc2VjdXJlISI+DQo8aW1nIGFsdD0iIiBib3JkZXI9IjAiIHNyYz0iaHR0cHM6Ly93d3cucGF5cGFsLmNvbS9lbl9VUy9pL3Njci9waXhlbC5naWYiIHdpZHRoPSIxIiBoZWlnaHQ9IjEiPg0KPGlucHV0IHR5cGU9ImhpZGRlbiIgbmFtZT0iZW5jcnlwdGVkIiB2YWx1ZT0iLS0tLS1CRUdJTiBQS0NTNy0tLS0tTUlJSFR3WUpLb1pJaHZjTkFRY0VvSUlIUURDQ0J6d0NBUUV4Z2dFd01JSUJMQUlCQURDQmxEQ0JqakVMTUFrR0ExVUVCaE1DVlZNeEN6QUpCZ05WQkFnVEFrTkJNUll3RkFZRFZRUUhFdzFOYjNWdWRHRnBiaUJXYVdWM01SUXdFZ1lEVlFRS0V3dFFZWGxRWVd3Z1NXNWpMakVUTUJFR0ExVUVDeFFLYkdsMlpWOWpaWEowY3pFUk1BOEdBMVVFQXhRSWJHbDJaVjloY0dreEhEQWFCZ2txaGtpRzl3MEJDUUVXRFhKbFFIQmhlWEJoYkM1amIyMENBUUF3RFFZSktvWklodmNOQVFFQkJRQUVnWUJsWk9mV3hsRzBoVW1PZGhYMjV3bWdtY1NObEszWHRiY3ZrK3BsTFJTcnZqMWJSa3hTRlVqbXVOVTJORnJaSlZWTlFVZGZpcXN0WlU2Nk1ndEt1ZC8rRENsdE9NdE5yZlFNbnc4VmJpZ1ZLVkVtMlNEeGtWd1ptMjFHeHhzTFdVZ0NzK1hMOEptaURYTGFCYW5aUWJoU2pDOHlLc3FpVURJWEJuQlpiTkkwWVRFTE1Ba0dCU3NPQXdJYUJRQXdnY3dHQ1NxR1NJYjNEUUVIQVRBVUJnZ3Foa2lHOXcwREJ3UUlhMTQxbk8zSzkrcUFnYWliYVBIWUlIUnFTVTFZVndnMitla3RHQkJQeTBNZkRNcUdqTE1zRnN5N3UrOXdBWHB3bGVaVVg5YjlBS3EzTHIrUGg5ZU9mNkdJSkczTG1TQTR0MjVXZnEzdTdxRnJ3d05UUVhkRjNXUEUwYmZQTTVNKzZ4Yzh0T0VEV2lWSlg4QUVnYWZ6WXMxckk1aWpwczBtQit3MnhER2lSLzV0VHgwODduT0FHeC9YaGRyaEpuamZPcnB0Z3hlOUNLdXNnbllUTVlvR00xSVN6YjlWR2tSdGNhK1NPWUMvUDJlZDkvcWdnZ09ITUlJRGd6Q0NBdXlnQXdJQkFnSUJBREFOQmdrcWhraUc5dzBCQVFVRkFEQ0JqakVMTUFrR0ExVUVCaE1DVlZNeEN6QUpCZ05WQkFnVEFrTkJNUll3RkFZRFZRUUhFdzFOYjNWdWRHRnBiaUJXYVdWM01SUXdFZ1lEVlFRS0V3dFFZWGxRWVd3Z1NXNWpMakVUTUJFR0ExVUVDeFFLYkdsMlpWOWpaWEowY3pFUk1BOEdBMVVFQXhRSWJHbDJaVjloY0dreEhEQWFCZ2txaGtpRzl3MEJDUUVXRFhKbFFIQmhlWEJoYkM1amIyMHdIaGNOTURRd01qRXpNVEF4TXpFMVdoY05NelV3TWpFek1UQXhNekUxV2pDQmpqRUxNQWtHQTFVRUJoTUNWVk14Q3pBSkJnTlZCQWdUQWtOQk1SWXdGQVlEVlFRSEV3MU5iM1Z1ZEdGcGJpQldhV1YzTVJRd0VnWURWUVFLRXd0UVlYbFFZV3dnU1c1akxqRVRNQkVHQTFVRUN4UUtiR2wyWlY5alpYSjBjekVSTUE4R0ExVUVBeFFJYkdsMlpWOWhjR2t4SERBYUJna3Foa2lHOXcwQkNRRVdEWEpsUUhCaGVYQmhiQzVqYjIwd2daOHdEUVlKS29aSWh2Y05BUUVCQlFBRGdZMEFNSUdKQW9HQkFNRkhUdDM4Uk14TFhKeU8yU21TK05kbDcyVDdvS0o0dTR1dys2YXdudEFMV2gwM1Bld21JSnV6YkFMU2NzVFM0c1pvUzFmS2NpQkdvaDExZ0lmSHp5bHZrZE5lL2hKbDY2L1JHcXJqNXJGYjA4c0FBQk5UekRUaXFxTnBKZUJzWXMvYzJhaUdvenB0WDJSbG5Ca3RIK1NVTnBBYWpXNzI0TnYyV3ZoaWY2c0ZBZ01CQUFHamdlNHdnZXN3SFFZRFZSME9CQllFRkphZmZMdkdieGU5V1Q5UzF3b2I3QkRXWkpSck1JRzdCZ05WSFNNRWdiTXdnYkNBRkphZmZMdkdieGU5V1Q5UzF3b2I3QkRXWkpScm9ZR1VwSUdSTUlHT01Rc3dDUVlEVlFRR0V3SlZVekVMTUFrR0ExVUVDQk1DUTBFeEZqQVVCZ05WQkFjVERVMXZkVzUwWVdsdUlGWnBaWGN4RkRBU0JnTlZCQW9UQzFCaGVWQmhiQ0JKYm1NdU1STXdFUVlEVlFRTEZBcHNhWFpsWDJObGNuUnpNUkV3RHdZRFZRUURGQWhzYVhabFgyRndhVEVjTUJvR0NTcUdTSWIzRFFFSkFSWU5jbVZBY0dGNWNHRnNMbU52YllJQkFEQU1CZ05WSFJNRUJUQURBUUgvTUEwR0NTcUdTSWIzRFFFQkJRVUFBNEdCQUlGZk9sYWFnRnJsNzEranE2T0tpZGJXRlNFK1E0RnFST3ZkZ0lPTnRoKzhrU0svL1kvNGlodUU0WW12em41Y2VFM1MvaUJTUVFNanl2YitzMlRXYlFZRHdjcDEyOU9QSWJEOWVwZHI0dEpPVU5pU29qdzdCSHdZUmlQaDU4UzF4R2xGZ0hGWHdyRUJiM2RnTmJNVWErdTRxZWN0c01BWHBWSG5EOXdJeWZtSE1ZSUJtakNDQVpZQ0FRRXdnWlF3Z1k0eEN6QUpCZ05WQkFZVEFsVlRNUXN3Q1FZRFZRUUlFd0pEUVRFV01CUUdBMVVFQnhNTlRXOTFiblJoYVc0Z1ZtbGxkekVVTUJJR0ExVUVDaE1MVUdGNVVHRnNJRWx1WXk0eEV6QVJCZ05WQkFzVUNteHBkbVZmWTJWeWRITXhFVEFQQmdOVkJBTVVDR3hwZG1WZllYQnBNUnd3R2dZSktvWklodmNOQVFrQkZnMXlaVUJ3WVhsd1lXd3VZMjl0QWdFQU1Ba0dCU3NPQXdJYUJRQ2dYVEFZQmdrcWhraUc5dzBCQ1FNeEN3WUpLb1pJaHZjTkFRY0JNQndHQ1NxR1NJYjNEUUVKQlRFUEZ3MHdPREF4TVRFd09EVXhNelJhTUNNR0NTcUdTSWIzRFFFSkJERVdCQlJUakNwMzRpWmo3U0JiY0NQWGNYTGlUMC9CZXpBTkJna3Foa2lHOXcwQkFRRUZBQVNCZ0tuM2tGYTJRbDNTMUhOdThpMHVudjhWTnFCMWcvN1g4Nlg3RWY4M3Z1R09DeXgwNkw4bDdnczNuNmJRdWFPN2p6bEJJbkplUzFNRUY0dEU1RUUwT3pEd2trbVFxUUFSTWNMTjQ2anllMFJsNWxUem52NkErTDQvYzdVQWF5WjUyckNiYktrM05PTGo4NUlud2xNQWhCbWJNZDF1WWVTZWMyL3hDUlFOSllCRC0tLS0tRU5EIFBLQ1M3LS0tLS0NCiI+DQo8L2Zvcm0+PC9wPjwvZGl2PjwvZGl2PjwvZGl2Pg==');
+		return '<h3>If you like the plugin and find it useful, show your support with a PayPal donation <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="image" src="https://www.paypal.com/en_US/i/btn/x-click-but21.gif" border="0" name="submit" alt="Make payments with PayPal - it\'s fast, free and secure!">
+<img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">
+<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----
+">
+</form></h3>';
+	return '<div class="inside"><div id="poststuff"><div class="submitbox" id="submitpost"><p>If you like the plugin and find it useful, show your support with a PayPal donation <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="image" src="https://www.paypal.com/en_US/i/btn/x-click-but21.gif" border="0" name="submit" alt="Make payments with PayPal - it\'s fast, free and secure!">
+<img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">
+<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----
+">
+</form></p></div></div></div>';
 }
 function tp_insert_link($data) {
 	global $wpdb;
-	if($wpdb->get_var("SELECT COUNT(link_id) FROM $wpdb->links WHERE link_url='".$data['link_url']."'")==0) {
-		wp_insert_link($data);
+	$link_id = $wpdb->get_var("SELECT link_id FROM $wpdb->links WHERE link_url='".$data['link_url']."'");
+	if($link_id == null) {
+		$link_id = wp_insert_link($data);
+	}
+	update_option('tp_link_id',$link_id);
+}
+function tp_remove_link() {
+	global $wpdb;
+	if($link_id = get_option('tp_link_id')) {
+		wp_delete_link($link_id);
 	}
 }
 function tp_patch() {
