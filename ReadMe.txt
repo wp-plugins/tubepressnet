@@ -3,7 +3,7 @@ Contributors: Mario Mansour
 Donate link: http://www.tubepress.net/
 Tags: wordpress video plugin, youtube, video, import youtube videos, wordpress plugins, wordpress youtube, youtube wordpress
 Requires at least: 2.7
-Tested up to: 3.1
+Tested up to: 3.2
 Stable tag: trunk
 
 Import Youtube Videos directly into your wordpress blog post or pages.
@@ -29,6 +29,10 @@ Import Youtube Videos directly into your wordpress blog post or pages.
 
 
 == Change Log ==
+= 3.2.3 =
+* Import by user is empty by default.
+* "Add TubePress link to blogroll?" is Off by default.
+
 = 3.2.2 =
 * Removed base64 encoding of Paypal donation button. Now appears as normal HTML code.
 * Blogroll link permission is added to the settings.

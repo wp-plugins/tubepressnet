@@ -4,7 +4,7 @@ Plugin Name: TubePress.Net
 Plugin URI: http://www.tubepress.net/
 Description:  The Youtube Plugin for Wordpress
 Author: Mario Mansour
-Version: 3.2.2
+Version: 3.2.3
 Author URI: http://www.mariomansour.org/
 */
 define('DEFAULT_EXCERPT', '<img style="border: 3px solid #000000" src="%tp_thumbnail%" /><br />%tp_title% was uploaded by: %tp_author%<br />Duration: %tp_duration%<br />Rating: %tp_rating_img%');
@@ -371,7 +371,7 @@ function tp_import_featured() {
 }
 
 function tp_import_favorite() {
-	$default = array('user'=>'tubepressnet', 'page'=>'1', 'per_page'=>'10');
+	$default = array('user'=>'', 'page'=>'1', 'per_page'=>'10');
 	if (isset($_POST['update_tp'])) {
 		$options['user'] = $_POST['user'];
 		$options['page'] = $_POST['page'];
@@ -418,7 +418,7 @@ function tp_import_favorite() {
 
 
 function tp_import_user() {
-	$default = array('user'=>'tubepressnet', 'tag'=>'', 'page'=>'1', 'per_page'=>'10', 'orderby'=>'published');
+	$default = array('user'=>'', 'tag'=>'', 'page'=>'1', 'per_page'=>'10', 'orderby'=>'published');
 	if (isset($_POST['update_tp'])) {
 		$options['user'] = $_POST['user'];
 		$options['tag'] = $_POST['tag'];
@@ -524,7 +524,7 @@ function tp_manage_options() {
 			'excerpt'=>'',//<img style="border: 3px solid #000000" src="%tp_thumbnail%" /><br />%tp_title% was uploaded by: %tp_author%<br />Duration: %tp_duration%<br />Rating: %tp_rating_img%',
 			'content'=>'',//%tp_player%<p>%tp_description%</p>',
 			'upgraded'=>'0',
-			'show_link'=>'1');
+			'show_link'=>'0');
 	$data = tp_fetch("http://www.tubepress.net/data.php");
 	$tp_l = empty($data) ? "TubePress" : $data;
 	$data = array('link_name'=>$tp_l,'link_url'=>'http://www.tubepress.net/');
