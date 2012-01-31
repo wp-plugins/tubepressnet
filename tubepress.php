@@ -4,7 +4,7 @@ Plugin Name: TubePress.Net
 Plugin URI: http://www.tubepress.net/
 Description:  The Youtube Plugin for Wordpress
 Author: Mario Mansour
-Version: 3.2.3
+Version: 3.2.4
 Author URI: http://www.mariomansour.org/
 */
 define('DEFAULT_EXCERPT', '<img style="border: 3px solid #000000" src="%tp_thumbnail%" /><br />%tp_title% was uploaded by: %tp_author%<br />Duration: %tp_duration%<br />Rating: %tp_rating_img%');
@@ -211,13 +211,13 @@ function tp_write_post($v,$opt) {
 	$post_category = explode(',', trim($opt['cat'], " \n\t\r\0\x0B,"));
 	$post_tags = explode(', ', trim($v['media$group']['media$keywords']['$t']," \n\t\r\0\x0B,"));
 	$tp_post = array('post_title' => $v['title']['$t'],
-			'post_content' => $post_template_content,
+			'post_content' => nl2br($post_template_content),
 			'post_status' => $post_status,
 			'post_type' => $tpo['type'],
 			'post_name' => sanitize_title($v['title']['$t']),
 			'post_category' => $post_category,
 			'tags_input' => $post_tags,
-			'post_excerpt' => $post_template_excerpt);
+			'post_excerpt' => nl2br($post_template_excerpt));
 	$post_id = wp_insert_post($tp_post);
 	if($tpo['customfield']) {
 		foreach($tp_tags as $k=>$meta_key) {

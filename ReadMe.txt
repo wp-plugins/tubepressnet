@@ -29,6 +29,9 @@ Import Youtube Videos directly into your wordpress blog post or pages.
 
 
 == Change Log ==
+= 3.2.4 =
+* Fixed the formatting of the description and excerpt
+
 = 3.2.3 =
 * Import by user is empty by default.
 * "Add TubePress link to blogroll?" is Off by default.
