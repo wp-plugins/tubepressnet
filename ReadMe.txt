@@ -30,6 +30,9 @@ Import Youtube Videos directly into your wordpress blog post or pages.
 
 == Change Log ==
 
+= 4.0.1 =
+* Youtube API Key can be configurable in the setup
+
 = 4.0.0 =
 * Simplified fork of code
 * Made it work with Youtube Data API (v3)

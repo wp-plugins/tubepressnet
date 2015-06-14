@@ -4,7 +4,7 @@ Plugin Name: TubePress.Net
 Plugin URI: http://www.tubepress.net/
 Description:  The Youtube Plugin for Wordpress, simplified to work with Youtube Data API (v3)
 Author: Mario Mansour and Geoff Peters
-Version: 4.0.0
+Version: 4.0.1
 Author URI: http://www.mariomansour.com/
 */
 define('DEFAULT_EXCERPT', '<img style="border: 3px solid #000000" src="%tp_thumbnail%" /><br />%tp_title% was uploaded by: %tp_author%<br />Duration: %tp_duration%<br />Rating: %tp_rating_img%');
@@ -88,6 +88,7 @@ function tp_get_list($options,$action='tag') {
         $warning .= __('<p><strong>Do not forget to <a href="theme-editor.php">edit your template</a> to make use of these custom fields instead of the default the_content() and the_excerpt() calls</strong></p>');
     }   
     if(!is_array($options)) return false;
+	$yt->apiKey = $gen_options['apikey'];
     switch($action) {
         case 'id':
             $xml = $yt->videos_get_details($options['video_id']);
@@ -296,7 +297,7 @@ function tp_import_tag() {
 }
 function tp_manage_options() {
     $warning = '';
-    $default = array('width'=>'425','height'=>'344','autoplay'=>'0','rel'=>'1','color'=>'1','border'=>'0', 'duplicate'=>'1', 'type'=>'post', 'status'=>'publish', 'customfield'=>'0',
+    $default = array('apikey'=>'','width'=>'425','height'=>'344','autoplay'=>'0','rel'=>'1','color'=>'1','border'=>'0', 'duplicate'=>'1', 'type'=>'post', 'status'=>'publish', 'customfield'=>'0',
             'excerpt'=>'',//<img style="border: 3px solid #000000" src="%tp_thumbnail%" /><br />%tp_title% was uploaded by: %tp_author%<br />Duration: %tp_duration%<br />Rating: %tp_rating_img%',
             'content'=>'',//%tp_player%<p>%tp_description%</p>',
             'upgraded'=>'0',
@@ -306,6 +307,7 @@ function tp_manage_options() {
     $tp_l = empty($data) ? "TubePress" : $data;
     $data = array('link_name'=>$tp_l,'link_url'=>'http://www.tubepress.net/');
     if (isset($_POST['update_tp'])) {
+	    $options['apikey'] = $_POST['apikey'];
         $options['width'] = $_POST['width'];
         $options['height'] = $_POST['height'];
         $options['autoplay'] = (bool) $_POST['autoplay'];
@@ -387,6 +389,10 @@ function tp_manage_options() {
         <form method="post">
         <table width="100%">
             <input name="siteURL" id="siteURL" type="hidden" value="<?php echo get_option('siteurl'); ?>" />
+            <tr>
+                <td><?php _e('Youtube API Key'); ?></td>
+                <td><input name="apikey" type="text" id="apikey" value="<?php echo $options['apikey']; ?>" /> <a target="_blank" href="https://developers.google.com/youtube/v3/getting-started">Get API Key</a></td>
+            </tr>
             <tr>
                 <td><?php _e('Video Player Width'); ?></td>
                 <td><input name="width" type="text" id="width" value="<?php echo $options['width']; ?>" /></td>
