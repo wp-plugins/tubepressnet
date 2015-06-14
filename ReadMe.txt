@@ -1,9 +1,9 @@
 === TubePress.NET ===
-Contributors: Mario Mansour
+Contributors: Mario Mansour and Geoff Peters
 Donate link: http://www.tubepress.net/
 Tags: wordpress video plugin, youtube, video, import youtube videos, wordpress plugins, wordpress youtube, youtube wordpress
 Requires at least: 2.7
-Tested up to: 3.2
+Tested up to: 4.2.2
 Stable tag: trunk
 
 Import Youtube Videos directly into your wordpress blog post or pages.
@@ -29,6 +29,14 @@ Import Youtube Videos directly into your wordpress blog post or pages.
 
 
 == Change Log ==
+
+= 4.0.0 =
+* Simplified fork of code
+* Made it work with Youtube Data API (v3)
+* Removed unneeded functionality for now (now it will only work
+  with importing video by id, other functionality could be added
+  back later.
+
 = 3.2.4 =
 * Fixed the formatting of the description and excerpt
 
